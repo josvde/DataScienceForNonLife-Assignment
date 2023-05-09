@@ -5,6 +5,9 @@
 
 ############## Import Data ##############
 
+library(ggplot2)
+library(data.table)
+library(dplyr)
 
 # 0. Import data
 
@@ -21,15 +24,12 @@ Data <- as.data.table(read.csv("DataCombined.csv", header=TRUE, sep=";", dec="."
 frequency <- Data$nbrtotc / Data$duree #number of claims during (period of) exposure di. Please not the second observation of (very) high (21). This is because one claim happened during a very short period (di=0.04)
 DataFreq <- cbind(Data, frequency)
 table(Data$nbrtotc) #number of claims
+sum(Data$nbrtotc)
 
 avg_freq <- sum(DataFreq$nbrtotc)/sum(DataFreq$duree)
 avg_freq #claim mean = 0.134 per year
 
 #### Frequency of claims per variable #### 
-
-# wrapper functions
-
-# +++ Charts to be added +++ #
 
 # Age of policyholder
 
@@ -40,7 +40,7 @@ frequency_by_age <- DataFreq %>%
 frequency_by_age
 summary(frequency_by_age)
 
-Freq_age <- ggplot(frequency_by_age, aes(x = AGEPH, y = avg_freq)) + 
+Freq.age <- ggplot(frequency_by_age, aes(x = AGEPH, y = avg_freq)) + 
   theme_bw() +
   geom_bar(stat = "identity", alpha = .5) +
   ggtitle("Claim frequency by age policyholder")
@@ -55,11 +55,11 @@ frequency_by_agecar <- DataFreq %>%
 frequency_by_agecar
 summary(frequency_by_agecar)
 
-Freq_agecar <- ggplot(frequency_by_agecar, aes(x = agecar, y = avg_freq)) + 
+Freq.agecar <- ggplot(frequency_by_agecar, aes(x = agecar, y = avg_freq)) + 
   theme_bw() +
   geom_bar(stat = "identity", alpha = .5) +
   ggtitle("Claim frequency by age policyholder")
-Freq_agecar
+
 
 # Gender
 
@@ -69,14 +69,14 @@ frequency_by_sex <- DataFreq %>%
 
 frequency_by_sex 
 
-plot.freq.sex <- ggplot(frequency_by_sex, aes(x = sexp, y = avg_freq)) + 
+Freq.sex <- ggplot(frequency_by_sex, aes(x = sexp, y = avg_freq)) + 
   theme_bw() +
   geom_bar(stat = "identity", alpha = .5) +
   ggtitle("Claim frequency by per gender")
-plot.freq.sex
 
 
-# Fueltype
+
+# Type of fuel
 
 frequency_by_fuel <- DataFreq %>%
   group_by(fuelc) %>%
@@ -84,13 +84,13 @@ frequency_by_fuel <- DataFreq %>%
 
 frequency_by_fuel 
 
-plot.freq.fuel <- ggplot(frequency_by_fuel, aes(x = fuelc, y = avg_freq)) + 
+Freq.fuel <- ggplot(frequency_by_fuel, aes(x = fuelc, y = avg_freq)) + 
   theme_bw() +
   geom_bar(stat = "identity", alpha = .5) +
   ggtitle("Claim frequency per fuel type")
-plot.freq.fuel
 
-# split
+
+# Split of the premium
 
 frequency_by_split <- DataFreq %>%
   group_by(split) %>%
@@ -98,11 +98,11 @@ frequency_by_split <- DataFreq %>%
 
 frequency_by_split
 
-plot.freq.split <- ggplot(frequency_by_split, aes(x = split, y = avg_freq)) + 
+Freq.split <- ggplot(frequency_by_split, aes(x = split, y = avg_freq)) + 
   theme_bw() +
   geom_bar(stat = "identity", alpha = .5) +
   ggtitle("Claim frequency per split")
-plot.freq.split
+
 
 # Use of the car
 
@@ -112,13 +112,13 @@ frequency_by_use <- DataFreq %>%
 
 frequency_by_use 
 
-plot.freq.use <- ggplot(frequency_by_use, aes(x = usec, y = avg_freq)) + 
+Freq.use <- ggplot(frequency_by_use, aes(x = usec, y = avg_freq)) + 
   theme_bw() +
   geom_bar(stat = "identity", alpha = .5) +
   ggtitle("Claim frequency per use of the car")
-plot.freq.use
+Freq.use
 
-# Fleet
+# Car beloning to a Fleet
 
 frequency_by_fleet <- DataFreq %>%
   group_by(fleetc) %>%
@@ -126,13 +126,13 @@ frequency_by_fleet <- DataFreq %>%
 
 frequency_by_fleet
 
-plot.freq.fleet <- ggplot(frequency_by_fleet, aes(x = fleetc, y = avg_freq)) + 
+Freq.fleet <- ggplot(frequency_by_fleet, aes(x = fleetc, y = avg_freq)) + 
   theme_bw() +
   geom_bar(stat = "identity", alpha = .5) +
   ggtitle("Claim frequency per fleet type")
-plot.freq.fleet
+Freq.fleet
 
-# Sport
+# Sport car
 
 frequency_by_sport <- DataFreq %>%
   group_by(sportc) %>%
@@ -140,13 +140,13 @@ frequency_by_sport <- DataFreq %>%
 
 frequency_by_sport
 
-plot.freq.sportc <- ggplot(frequency_by_sport, aes(x = sportc, y = avg_freq)) + 
+Freq.sportc <- ggplot(frequency_by_sport, aes(x = sportc, y = avg_freq)) + 
   theme_bw() +
   geom_bar(stat = "identity", alpha = .5) +
   ggtitle("Claim frequency per sport type")
-plot.freq.sportc
 
-# Cover
+
+# Coverage
 
 frequency_by_cover <- DataFreq %>%
   group_by(coverp) %>%
@@ -154,14 +154,13 @@ frequency_by_cover <- DataFreq %>%
 
 frequency_by_cover 
 
-plot.freq.cover <- ggplot(frequency_by_cover, aes(x = coverp, y = avg_freq)) + 
+Freq.cover <- ggplot(frequency_by_cover, aes(x = coverp, y = avg_freq)) + 
   theme_bw() +
   geom_bar(stat = "identity", alpha = .5) +
-  ggtitle("Claim frequency per cover type")
-plot.freq.cover
+  ggtitle("Claim frequency per coverage type")
 
 
-# Power
+# Power of the car
 
 frequency_by_power <- DataFreq %>%
   group_by(powerc) %>%
@@ -169,9 +168,43 @@ frequency_by_power <- DataFreq %>%
 
 frequency_by_power
 
-plot.freq.power <- ggplot(frequency_by_power, aes(x = powerc, y = avg_freq)) + 
+Freq.power <- ggplot(frequency_by_power, aes(x = powerc, y = avg_freq)) + 
   theme_bw() +
   geom_bar(stat = "identity", alpha = .5) +
   ggtitle("Claim frequency per power type")
-plot.freq.power
+
+
+## Plot Frequency graphs
+
+# [RD] I have troubles combined the different plots in one, view. Somebody who can help?
+Freq.age
+Freq.agecar
+Freq.sex
+Freq.fuel
+Freq.split
+Freq.sportc
+Freq.cover
+Freq.power
+
+
+############## Severity ##############
+#### Severity of claims per variable #### 
+
+avgr_claim <- Data$chargtot / Data$nbrtotc
+DataSev <- cbind(Data, avgr_claim)
+DataSev
+
+## Check for outliers #Boys, not sure how we can detect outliers in a assymetric distribution. 
+
+# get mean and Standard deviation
+mean = mean(Data$chargtot)
+std = sd(Data$chargtot)
+
+# get threshold values for outliers
+Tmax = mean+(3*std) 
+Tmax #outliers are all values above 17.857
+
+# find outlier
+table(Data$chargtot > Tmax)["TRUE"]
+
 
