@@ -37,7 +37,7 @@ frequency_by_age <- DataFreq %>%
   group_by(AGEPH) %>%
   summarise(avg_freq = sum(nbrtotc)/sum(duree))
 
-frequency_by_age
+print(frequency_by_age,n = 79)
 summary(frequency_by_age)
 
 Freq.age <- ggplot(frequency_by_age, aes(x = AGEPH, y = avg_freq)) + 
@@ -212,11 +212,170 @@ std = sd(DataCleaned$chargtot)
 
 # get threshold values for outlines
 Tmax = mean+(3*std) 
-Tmax #outliers are all values above 17 857
+Tmax #outliers are all values above 54 286
 
 # find outlier
-table(Data$DataCleaned > Tmax)["TRUE"]
+table(Data$chargtot > Tmax)["TRUE"]
 
-Data_no <- DataCleaned[which(DataCleaned$chargtot < Tmax),]
+Data_no_out <- DataCleaned[which(DataCleaned$chargtot < Tmax),]
 
-boxplot(Data_no$chargtot)
+boxplot(Data_no_out$chargtot)
+
+#### Severity of claims per variable #### 
+
+# Age of policyholder
+
+severity_by_age <- DataSev %>%
+  group_by(AGEPH) %>%
+  summarise(avgr_claim = sum(chargtot)/sum(nbrtotc))
+
+print(severity_by_age,n=79)
+summary(severity_by_age)
+
+Sev.age <- ggplot(severity_by_age, aes(x = AGEPH, y = avgr_claim)) + 
+  theme_bw() +
+  geom_bar(stat = "identity", alpha = .5) +
+  ggtitle("Claim severity by age policyholder")
+
+
+# Age car
+
+severity_by_agecar <- DataSev %>%
+  group_by(agecar) %>%
+  summarize(avgr_claim = sum(chargtot)/sum(nbrtotc))
+
+severity_by_agecar
+summary(severity_by_agecar)
+
+Sev.agecar <- ggplot(severity_by_agecar, aes(x = agecar, y = avgr_claim)) + 
+  theme_bw() +
+  geom_bar(stat = "identity", alpha = .5) +
+  ggtitle("Claim severity by age policyholder")
+
+
+# Gender
+
+severity_by_sex <- DataSev %>%
+  group_by(sexp) %>%
+  summarize(avgr_claim = sum(chargtot)/sum(nbrtotc))
+
+severity_by_sex 
+
+Sev.sex <- ggplot(severity_by_sex, aes(x = sexp, y = avgr_claim)) + 
+  theme_bw() +
+  geom_bar(stat = "identity", alpha = .5) +
+  ggtitle("Claim severity by per gender")
+
+
+
+# Type of fuel
+
+severity_by_fuel <- DataSev %>%
+  group_by(fuelc) %>%
+  summarize(avgr_claim = sum(chargtot)/sum(nbrtotc))
+
+severity_by_fuel 
+
+Sev.fuel <- ggplot(severity_by_fuel, aes(x = fuelc, y = avgr_claim)) + 
+  theme_bw() +
+  geom_bar(stat = "identity", alpha = .5) +
+  ggtitle("Claim severity per fuel type")
+
+
+# Split of the premium
+
+severity_by_split <- DataSev %>%
+  group_by(split) %>%
+  summarize(avgr_claim = sum(chargtot)/sum(nbrtotc))
+
+severity_by_split
+
+Sev.split <- ggplot(severity_by_split, aes(x = split, y = avgr_claim)) + 
+  theme_bw() +
+  geom_bar(stat = "identity", alpha = .5) +
+  ggtitle("Claim severity per split")
+
+
+# Use of the car
+
+severity_by_use <- DataSev %>%
+  group_by(usec) %>%
+  summarize(avgr_claim = sum(chargtot)/sum(nbrtotc))
+
+severity_by_use 
+
+Sev.use <- ggplot(severity_by_use, aes(x = usec, y = avgr_claim)) + 
+  theme_bw() +
+  geom_bar(stat = "identity", alpha = .5) +
+  ggtitle("Claim severity per use of the car")
+Sev.use
+
+# Car beloning to a Fleet
+
+severity_by_fleet <- DataSev %>%
+  group_by(fleetc) %>%
+  summarize(avgr_claim = sum(chargtot)/sum(nbrtotc))
+
+severity_by_fleet
+
+Sev.fleet <- ggplot(severity_by_fleet, aes(x = fleetc, y = avgr_claim)) + 
+  theme_bw() +
+  geom_bar(stat = "identity", alpha = .5) +
+  ggtitle("Claim severity per fleet type")
+Sev.fleet
+
+# Sport car
+
+severity_by_sport <- DataSev %>%
+  group_by(sportc) %>%
+  summarize(avgr_claim = sum(chargtot)/sum(nbrtotc))
+
+severity_by_sport
+
+Sev.sportc <- ggplot(severity_by_sport, aes(x = sportc, y = avgr_claim)) + 
+  theme_bw() +
+  geom_bar(stat = "identity", alpha = .5) +
+  ggtitle("Claim severity per sport type")
+
+
+# Coverage
+
+severity_by_cover <- DataSev %>%
+  group_by(coverp) %>%
+  summarize(avgr_claim = sum(chargtot)/sum(nbrtotc))
+
+severity_by_cover 
+
+Sev.cover <- ggplot(severity_by_cover, aes(x = coverp, y = avgr_claim)) + 
+  theme_bw() +
+  geom_bar(stat = "identity", alpha = .5) +
+  ggtitle("Claim severity per coverage type")
+
+
+# Power of the car
+
+severity_by_power <- DataSev %>%
+  group_by(powerc) %>%
+  summarize(avgr_claim = sum(chargtot)/sum(nbrtotc))
+
+severity_by_power
+
+Sev.power <- ggplot(severity_by_power, aes(x = powerc, y = avgr_claim)) + 
+  theme_bw() +
+  geom_bar(stat = "identity", alpha = .5) +
+  ggtitle("Claim severity per power type")
+
+
+## Plot severity graphs
+
+# [RD] I have troubles combined the different plots in one, view. Somebody who can help?
+Sev.age
+Sev.agecar
+Sev.sex
+Sev.fuel
+Sev.split
+Sev.sportc
+Sev.cover
+Sev.power
+
+
