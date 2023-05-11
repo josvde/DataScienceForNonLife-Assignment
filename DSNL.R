@@ -194,17 +194,29 @@ avgr_claim <- Data$chargtot / Data$nbrtotc
 DataSev <- cbind(Data, avgr_claim)
 DataSev
 
+## remove observations without no claims
+
+DataCleaned <- DataSev[which(DataSev$nbrtotc  > 0),]
+DataCleaned <- DataSev[which(DataSev$chargtot  > 0),]
+
+
 ## Check for outliers #Boys, not sure how we can detect outliers in a assymetric distribution. 
 
-# get mean and Standard deviation
-mean = mean(Data$chargtot)
-std = sd(Data$chargtot)
+boxplot(DataCleaned$chargtot) #many outliers, one extreme outlier 1989567.9 
+summary(DataCleaned$chargtot) #summary says that there are claims amounts equal to 0.0 but this is due to rounding. Is it not strange that we have chargetot of 0.02
 
-# get threshold values for outliers
+
+# get mean and Standard deviation
+mean = mean(DataCleaned$chargtot)
+std = sd(DataCleaned$chargtot)
+
+# get threshold values for outlines
 Tmax = mean+(3*std) 
-Tmax #outliers are all values above 17.857
+Tmax #outliers are all values above 17 857
 
 # find outlier
-table(Data$chargtot > Tmax)["TRUE"]
+table(Data$DataCleaned > Tmax)["TRUE"]
 
+Data_no <- DataCleaned[which(DataCleaned$chargtot < Tmax),]
 
+boxplot(Data_no$chargtot)
