@@ -15,6 +15,9 @@
 library(ggplot2)
 library(data.table)
 library(dplyr)
+library(tidyverse) # for data manipulation
+library(sf) # for spatial data manipulation
+library(tmap) # for creating maps
 
 # 0. Import data
 
@@ -181,13 +184,37 @@ Freq.power <- ggplot(frequency_by_power, aes(x = powerc, y = avg_freq)) +
   ggtitle("Claim frequency per power type")
 
 # Location of policyholder
+  # municipal level (including map based on Long/Lat)
 
-frequency_by_Location <- DataFreq %>%
+frequency_by_Location_muni <- DataFreq %>%
   select(LONG, LAT,frequency)
 
-Freq.location <- ggplot(frequency_by_Location, aes(x = LONG, y = LAT, color=frequency)) + 
-  geom_point() +
-  labs(title="Claim frequency by location")
+Freq.location_muni <- ggplot(frequency_by_Location_muni, aes(x = LONG, y = LAT, color=frequency,size = frequency)) + 
+  geom_point(alpha = 0.5) +
+  labs(title="Claim frequency by location (municipal)", color = "Frequency")
+
+  # district level
+
+DataFreq_INS2 <- DataFreq %>%
+  mutate(INS = substr(INS, 1, 2))
+
+INS_freq <- DataFreq %>%
+  group_by(INS) %>%
+  summarise(avg_freq = sum(nbrtotc)/sum(duree))
+
+print(INS_freq)
+
+  # province level
+
+DataFreq_INS1 <- DataFreq %>%
+  mutate(INS = substr(INS, 1, 1))
+
+INS_freq <- DataFreq %>%
+  group_by(INS) %>%
+  summarise(avg_freq = sum(nbrtotc)/sum(duree))
+
+print(INS_freq)
+
 
 ## Plot Frequency graphs
 
@@ -382,15 +409,6 @@ Sev.power <- ggplot(severity_by_power, aes(x = powerc, y = Claim_sev)) +
   theme_bw() +
   geom_bar(stat = "identity", alpha = .5) +
   ggtitle("Claim severity per power type")
-
-# Location of policyholder
-
-severity_by_Location <- Data_no_out %>%
-  select(LONG, LAT,avgr_claim)
-
-Sev.location <- ggplot(severity_by_Location, aes(x = LONG, y = LAT, color=avgr_claim)) + 
-  geom_point() +
-  labs(title="Claim severity by location")
 
 ## Plot severity graphs
 
