@@ -35,7 +35,7 @@ sum(Data$nbrtotc)
 
 avg_freq <- sum(DataFreq$nbrtotc)/sum(DataFreq$duree)
 avg_freq #claim mean = 0.134 per year
-
+Frequec
 #### Frequency of claims per variable #### 
 
 # Age of policyholder
@@ -180,6 +180,14 @@ Freq.power <- ggplot(frequency_by_power, aes(x = powerc, y = avg_freq)) +
   geom_bar(stat = "identity", alpha = .5) +
   ggtitle("Claim frequency per power type")
 
+# Location of policyholder
+
+frequency_by_Location <- DataFreq %>%
+  select(LONG, LAT,frequency)
+
+Freq.location <- ggplot(frequency_by_Location, aes(x = LONG, y = LAT, color=frequency)) + 
+  geom_point() +
+  labs(title="Claim frequency by location")
 
 ## Plot Frequency graphs
 
@@ -192,6 +200,7 @@ Freq.split
 Freq.sportc
 Freq.cover
 Freq.power
+Freq.location
 
 
 ############## Severity ##############
@@ -374,6 +383,14 @@ Sev.power <- ggplot(severity_by_power, aes(x = powerc, y = Claim_sev)) +
   geom_bar(stat = "identity", alpha = .5) +
   ggtitle("Claim severity per power type")
 
+# Location of policyholder
+
+severity_by_Location <- Data_no_out %>%
+  select(LONG, LAT,avgr_claim)
+
+Sev.location <- ggplot(severity_by_Location, aes(x = LONG, y = LAT, color=avgr_claim)) + 
+  geom_point() +
+  labs(title="Claim severity by location")
 
 ## Plot severity graphs
 
@@ -386,5 +403,6 @@ Sev.split
 Sev.sportc
 Sev.cover
 Sev.power
+Sev.location
 
 
