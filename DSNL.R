@@ -2,6 +2,13 @@
 ## Assignment Data science for None-Life##
 ##########################################
 
+## Dataframes
+# Data -> Data provided on Toledo
+# DataCleaned -> Data where policyholders that reported zero claims are omitted 
+# Data_no_out -> DataCleaned + removal outliers
+# Tmax -> Claim amounts above this value is considered as an outlier
+
+
 
 ############## Import Data ##############
 
