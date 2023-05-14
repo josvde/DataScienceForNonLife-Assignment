@@ -39,9 +39,9 @@ sum(Data$nbrtotc)
 avg_freq <- sum(DataFreq$nbrtotc)/sum(DataFreq$duree)
 avg_freq #claim mean = 0.134 per year
 
-############# Section 2.1 Frequency Data #############
+############ Section 2.1 Frequency Data #############
 
-### 2.1.1 Age of policyholder ###
+#### 2.1.1 Age of policyholder ####
 
   frequency_by_age <- DataFreq %>%
     group_by(AGEPH) %>%
@@ -56,7 +56,7 @@ avg_freq #claim mean = 0.134 per year
     ggtitle("Claim frequency by age policyholder")
   Freq.age
 
-### 2.1.2 Age of car ###
+#### 2.1.2 Age of car ####
   
   frequency_by_agecar <- DataFreq %>%
     group_by(agecar) %>%
@@ -70,7 +70,7 @@ avg_freq #claim mean = 0.134 per year
     geom_bar(stat = "identity", alpha = .5) +
     ggtitle("Claim frequency by age policyholder")
 
-### 2.1.3 Gender of policyholder ###
+#### 2.1.3 Gender of policyholder ####
   
   frequency_by_sex <- DataFreq %>%
     group_by(sexp) %>%
@@ -84,7 +84,7 @@ avg_freq #claim mean = 0.134 per year
     ggtitle("Claim frequency by per gender")
 
 
-### 2.1.3 Type of fuel ###
+#### 2.1.3 Type of fuel ####
   
   frequency_by_fuel <- DataFreq %>%
     group_by(fuelc) %>%
@@ -98,7 +98,7 @@ avg_freq #claim mean = 0.134 per year
     ggtitle("Claim frequency per fuel type")
 
   
- ### 2.1.4 Frequency premium ###
+#### 2.1.4 Frequency premium ####
   
 
   frequency_by_split <- DataFreq %>%
@@ -113,7 +113,7 @@ avg_freq #claim mean = 0.134 per year
     ggtitle("Claim frequency per split")
 
 
-### 2.1.5 Use of Car ###
+#### 2.1.5 Use of Car ####
   
   frequency_by_use <- DataFreq %>%
     group_by(usec) %>%
@@ -125,52 +125,49 @@ avg_freq #claim mean = 0.134 per year
     theme_bw() +
     geom_bar(stat = "identity", alpha = .5) +
     ggtitle("Claim frequency per use of the car")
-  Freq.use
+  
 
-# Car beloning to a Fleet
+#### 2.1.6 Fleet ####
+  
+  frequency_by_fleet <- DataFreq %>%
+    group_by(fleetc) %>%
+    summarize(avg_freq = sum(nbrtotc)/sum(duree))
+  
+  frequency_by_fleet
+  
+  Freq.fleet <- ggplot(frequency_by_fleet, aes(x = fleetc, y = avg_freq)) + 
+    theme_bw() +
+    geom_bar(stat = "identity", alpha = .5) +
+    ggtitle("Claim frequency per fleet type")
 
-frequency_by_fleet <- DataFreq %>%
-  group_by(fleetc) %>%
-  summarize(avg_freq = sum(nbrtotc)/sum(duree))
+#### 2.1.7 Sportcar ####
 
-frequency_by_fleet
+  frequency_by_sport <- DataFreq %>%
+    group_by(sportc) %>%
+    summarize(avg_freq = sum(nbrtotc)/sum(duree))
+  
+  frequency_by_sport
+  
+  Freq.sportc <- ggplot(frequency_by_sport, aes(x = sportc, y = avg_freq)) + 
+    theme_bw() +
+    geom_bar(stat = "identity", alpha = .5) +
+    ggtitle("Claim frequency per sport type")
 
-Freq.fleet <- ggplot(frequency_by_fleet, aes(x = fleetc, y = avg_freq)) + 
-  theme_bw() +
-  geom_bar(stat = "identity", alpha = .5) +
-  ggtitle("Claim frequency per fleet type")
-Freq.fleet
+#### 2.1.8 Coverage type ####
+  
+  frequency_by_cover <- DataFreq %>%
+    group_by(coverp) %>%
+    summarize(avg_freq = sum(nbrtotc)/sum(duree))
+  
+  frequency_by_cover 
+  
+  Freq.cover <- ggplot(frequency_by_cover, aes(x = coverp, y = avg_freq)) + 
+    theme_bw() +
+    geom_bar(stat = "identity", alpha = .5) +
+    ggtitle("Claim frequency per coverage type")
 
-# Sport car
-
-frequency_by_sport <- DataFreq %>%
-  group_by(sportc) %>%
-  summarize(avg_freq = sum(nbrtotc)/sum(duree))
-
-frequency_by_sport
-
-Freq.sportc <- ggplot(frequency_by_sport, aes(x = sportc, y = avg_freq)) + 
-  theme_bw() +
-  geom_bar(stat = "identity", alpha = .5) +
-  ggtitle("Claim frequency per sport type")
-
-
-# Coverage
-
-frequency_by_cover <- DataFreq %>%
-  group_by(coverp) %>%
-  summarize(avg_freq = sum(nbrtotc)/sum(duree))
-
-frequency_by_cover 
-
-Freq.cover <- ggplot(frequency_by_cover, aes(x = coverp, y = avg_freq)) + 
-  theme_bw() +
-  geom_bar(stat = "identity", alpha = .5) +
-  ggtitle("Claim frequency per coverage type")
-
-
-# Power of the car
-
+#### 2.1.9 Horsepower of the car ####
+  
 frequency_by_power <- DataFreq %>%
   group_by(powerc) %>%
   summarize(avg_freq = sum(nbrtotc)/sum(duree))
@@ -182,7 +179,7 @@ Freq.power <- ggplot(frequency_by_power, aes(x = powerc, y = avg_freq)) +
   geom_bar(stat = "identity", alpha = .5) +
   ggtitle("Claim frequency per power type")
 
-# Location of policyholder
+#### 2.1.10 Location of policyholder  ####
   # municipal level (including map based on Long/Lat)
 
 frequency_by_Location_muni <- DataFreq %>%
@@ -215,7 +212,7 @@ INS_freq <- DataFreq %>%
 print(INS_freq)
 
 
-## Plot Frequency graphs
+#### Plot Frequency graphs  ####
 
 grid.arrange(Freq.age, nrow = 1)
 grid.arrange(Freq.agecar, Freq.sex, Freq.fuel, Freq.split, Freq.use, Freq.fleet, Freq.sportc, Freq.cover, Freq.power, nrow = 3)
