@@ -219,6 +219,7 @@ print(INS_freq)
 ## Plot Frequency graphs
 
 # [RD] I have troubles combined the different plots in one, view. Somebody who can help?
+# [JFVC] this part of code can be deleted?
 Freq.age
 Freq.agecar
 Freq.sex
@@ -228,6 +229,14 @@ Freq.sportc
 Freq.cover
 Freq.power
 Freq.location
+
+# [JFVC] proposed new combination of graphs
+
+library(gridExtra)
+
+grid.arrange(Freq.age, nrow = 1)
+grid.arrange(Freq.agecar, Freq.sex, Freq.fuel, Freq.split, Freq.use, Freq.fleet, Freq.sportc, Freq.cover, Freq.power, nrow = 3)
+grid.arrange(Freq.location_muni, nrow = 1)
 
 
 ############## Severity ##############
