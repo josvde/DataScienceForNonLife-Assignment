@@ -5,15 +5,15 @@
 ## Robin Dessein                        ##
 ##########################################
 
+############# 0. Import Data #############
+
+
 ## Dataframes
 # Data -> Data provided on Toledo
 # DataCleaned -> Data where policyholders that reported zero claims are omitted 
 # Data_no_out -> DataCleaned + removal outliers
 # Tmax -> Claim amounts above this value is considered as an outlier
 
-
-
-############## Import Data ##############
 
 library(ggplot2)
 library(data.table)
@@ -23,13 +23,13 @@ library(sf) # for spatial data manipulation
 library(tmap) # for creating maps
 library(gridExtra)
 
-# 0. Import data
-
 dir <- dirname(rstudioapi::getActiveDocumentContext()$path)
 setwd(dir)
 rm(dir)
 
-############## Frequency ##############
+Data <- as.data.table(read.csv("DataCombined.csv", header=TRUE, sep=";", dec="."))
+
+############# Section 2. Descriptive analysis #############
 
 frequency <- Data$nbrtotc / Data$duree #number of claims during (period of) exposure di. Please not the second observation of (very) high (21). This is because one claim happened during a very short period (di=0.04)
 DataFreq <- cbind(Data, frequency)
@@ -38,95 +38,94 @@ sum(Data$nbrtotc)
 
 avg_freq <- sum(DataFreq$nbrtotc)/sum(DataFreq$duree)
 avg_freq #claim mean = 0.134 per year
-Frequec
-#### Frequency of claims per variable #### 
 
-# Age of policyholder
+############# Section 2.1 Frequency Data #############
 
-frequency_by_age <- DataFreq %>%
-  group_by(AGEPH) %>%
-  summarise(avg_freq = sum(nbrtotc)/sum(duree))
+### 2.1.1 Age of policyholder ###
 
-print(frequency_by_age,n = 79)
-summary(frequency_by_age)
+  frequency_by_age <- DataFreq %>%
+    group_by(AGEPH) %>%
+    summarise(avg_freq = sum(nbrtotc)/sum(duree))
+  
+  print(frequency_by_age,n = 79)
+  summary(frequency_by_age)
+  
+  Freq.age <- ggplot(frequency_by_age, aes(x = AGEPH, y = avg_freq)) + 
+    theme_bw() +
+    geom_bar(stat = "identity", alpha = .5) +
+    ggtitle("Claim frequency by age policyholder")
+  Freq.age
 
-Freq.age <- ggplot(frequency_by_age, aes(x = AGEPH, y = avg_freq)) + 
-  theme_bw() +
-  geom_bar(stat = "identity", alpha = .5) +
-  ggtitle("Claim frequency by age policyholder")
-Freq.age
+### 2.1.2 Age of car ###
+  
+  frequency_by_agecar <- DataFreq %>%
+    group_by(agecar) %>%
+    summarize(avg_freq = sum(nbrtotc)/sum(duree))
+  
+  frequency_by_agecar
+  summary(frequency_by_agecar)
+  
+  Freq.agecar <- ggplot(frequency_by_agecar, aes(x = agecar, y = avg_freq)) + 
+    theme_bw() +
+    geom_bar(stat = "identity", alpha = .5) +
+    ggtitle("Claim frequency by age policyholder")
 
-# Age car
-
-frequency_by_agecar <- DataFreq %>%
-  group_by(agecar) %>%
-  summarize(avg_freq = sum(nbrtotc)/sum(duree))
-
-frequency_by_agecar
-summary(frequency_by_agecar)
-
-Freq.agecar <- ggplot(frequency_by_agecar, aes(x = agecar, y = avg_freq)) + 
-  theme_bw() +
-  geom_bar(stat = "identity", alpha = .5) +
-  ggtitle("Claim frequency by age policyholder")
-
-
-# Gender
-
-frequency_by_sex <- DataFreq %>%
-  group_by(sexp) %>%
-  summarize(avg_freq = sum(nbrtotc)/sum(duree))
-
-frequency_by_sex 
-
-Freq.sex <- ggplot(frequency_by_sex, aes(x = sexp, y = avg_freq)) + 
-  theme_bw() +
-  geom_bar(stat = "identity", alpha = .5) +
-  ggtitle("Claim frequency by per gender")
-
+### 2.1.3 Gender of policyholder ###
+  
+  frequency_by_sex <- DataFreq %>%
+    group_by(sexp) %>%
+    summarize(avg_freq = sum(nbrtotc)/sum(duree))
+  
+  frequency_by_sex 
+  
+  Freq.sex <- ggplot(frequency_by_sex, aes(x = sexp, y = avg_freq)) + 
+    theme_bw() +
+    geom_bar(stat = "identity", alpha = .5) +
+    ggtitle("Claim frequency by per gender")
 
 
-# Type of fuel
+### 2.1.3 Type of fuel ###
+  
+  frequency_by_fuel <- DataFreq %>%
+    group_by(fuelc) %>%
+    summarize(avg_freq = sum(nbrtotc)/sum(duree))
+  
+  frequency_by_fuel 
+  
+  Freq.fuel <- ggplot(frequency_by_fuel, aes(x = fuelc, y = avg_freq)) + 
+    theme_bw() +
+    geom_bar(stat = "identity", alpha = .5) +
+    ggtitle("Claim frequency per fuel type")
 
-frequency_by_fuel <- DataFreq %>%
-  group_by(fuelc) %>%
-  summarize(avg_freq = sum(nbrtotc)/sum(duree))
+  
+ ### 2.1.4 Frequency premium ###
+  
 
-frequency_by_fuel 
-
-Freq.fuel <- ggplot(frequency_by_fuel, aes(x = fuelc, y = avg_freq)) + 
-  theme_bw() +
-  geom_bar(stat = "identity", alpha = .5) +
-  ggtitle("Claim frequency per fuel type")
-
-
-# Split of the premium
-
-frequency_by_split <- DataFreq %>%
-  group_by(split) %>%
-  summarize(avg_freq = sum(nbrtotc)/sum(duree))
-
-frequency_by_split
-
-Freq.split <- ggplot(frequency_by_split, aes(x = split, y = avg_freq)) + 
-  theme_bw() +
-  geom_bar(stat = "identity", alpha = .5) +
-  ggtitle("Claim frequency per split")
+  frequency_by_split <- DataFreq %>%
+    group_by(split) %>%
+    summarize(avg_freq = sum(nbrtotc)/sum(duree))
+  
+  frequency_by_split
+  
+  Freq.split <- ggplot(frequency_by_split, aes(x = split, y = avg_freq)) + 
+    theme_bw() +
+    geom_bar(stat = "identity", alpha = .5) +
+    ggtitle("Claim frequency per split")
 
 
-# Use of the car
-
-frequency_by_use <- DataFreq %>%
-  group_by(usec) %>%
-  summarize(avg_freq = sum(nbrtotc)/sum(duree))
-
-frequency_by_use 
-
-Freq.use <- ggplot(frequency_by_use, aes(x = usec, y = avg_freq)) + 
-  theme_bw() +
-  geom_bar(stat = "identity", alpha = .5) +
-  ggtitle("Claim frequency per use of the car")
-Freq.use
+### 2.1.5 Use of Car ###
+  
+  frequency_by_use <- DataFreq %>%
+    group_by(usec) %>%
+    summarize(avg_freq = sum(nbrtotc)/sum(duree))
+  
+  frequency_by_use 
+  
+  Freq.use <- ggplot(frequency_by_use, aes(x = usec, y = avg_freq)) + 
+    theme_bw() +
+    geom_bar(stat = "identity", alpha = .5) +
+    ggtitle("Claim frequency per use of the car")
+  Freq.use
 
 # Car beloning to a Fleet
 
@@ -476,14 +475,4 @@ grid.arrange(Sev.agecar, Sev.sex, Sev.fuel, Sev.split, Sev.use, Sev.fleet, Sev.s
       cat("Correlation coefficient:", round(cor_result$estimate, 4), "\n") #0.2028925 there is a positive correlation btwn age of policyholder and age of car)
       cat("95% confidence interval:", round(cor_result$conf.int, 4), "\n")
       
-
-# 1. frequency
-
-frequency <- Data$nbrtotc / Data$duree #number of claims during (period of) exposure di
-DataFreq <- cbind(Data, frequency)
-DataFreq
-
-summary(DataFreq$nbrtotc)
-summary(Data$emp_freq)
-avg_freq <- sum(DataFreq$nbrtotc)/sum(DataFreq$duree)
 
