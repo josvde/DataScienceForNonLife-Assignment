@@ -1,5 +1,8 @@
 ##########################################
 ## Assignment Data science for None-Life##
+## Jean-Ferdinand van Cauwenbergh       ##
+## Jos Van den Eynde                    ## 
+## Robin Dessein                        ##
 ##########################################
 
 ## Dataframes
@@ -459,4 +462,21 @@ grid.arrange(Sev.agecar, Sev.sex, Sev.fuel, Sev.split, Sev.use, Sev.fleet, Sev.s
       cat("Correlation coefficient:", round(cor_result$estimate, 4), "\n") #0.2028925 there is a positive correlation btwn age of policyholder and age of car)
       cat("95% confidence interval:", round(cor_result$conf.int, 4), "\n")
       
-
+    ## Between Sport Car and Fuel type
+      
+      df <- data.frame(Data$fuelc, Data$powerc)
+      
+      # convert the string variables to numeric values
+      df$fuel_type_numeric <- ifelse(df$Data.fuelc == 'Gasoil', 1, 0)
+      df$power_car_numeric <- ifelse(df$Data.powerc == '<66', 0, 
+                                     ifelse(df$Data.powerc == '66-110', 1, 2))
+      summary(df)
+      
+      # calculate the correlation 
+      cor(df$fuel_type_numeric, df$power_car_numeric) 
+      cor_result <- cor.test(df$fuel_type_numeric, df$power_car_numeric, method = "pearson", conf.level = 0.95)
+      
+      # print the correlation coefficient and its confidence interval
+      cat("Correlation coefficient:", round(cor_result$estimate, 4), "\n") #0.2028925 there is a positive correlation btwn age of policyholder and age of car)
+      cat("95% confidence interval:", round(cor_result$conf.int, 4), "\n")
+      
