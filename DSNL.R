@@ -29,12 +29,6 @@ dir <- dirname(rstudioapi::getActiveDocumentContext()$path)
 setwd(dir)
 rm(dir)
 
-### 0.1 Data of "Assinment.csv" and "inspost.xls" merged using VLOOKUP
-
-### 0.2 import dataframe
-
-Data <- as.data.table(read.csv("DataCombined.csv", header=TRUE, sep=";", dec="."))
-
 ############## Frequency ##############
 
 frequency <- Data$nbrtotc / Data$duree #number of claims during (period of) exposure di. Please not the second observation of (very) high (21). This is because one claim happened during a very short period (di=0.04)
@@ -482,3 +476,14 @@ grid.arrange(Sev.agecar, Sev.sex, Sev.fuel, Sev.split, Sev.use, Sev.fleet, Sev.s
       cat("Correlation coefficient:", round(cor_result$estimate, 4), "\n") #0.2028925 there is a positive correlation btwn age of policyholder and age of car)
       cat("95% confidence interval:", round(cor_result$conf.int, 4), "\n")
       
+
+# 1. frequency
+
+frequency <- Data$nbrtotc / Data$duree #number of claims during (period of) exposure di
+DataFreq <- cbind(Data, frequency)
+DataFreq
+
+summary(DataFreq$nbrtotc)
+summary(Data$emp_freq)
+avg_freq <- sum(DataFreq$nbrtotc)/sum(DataFreq$duree)
+
