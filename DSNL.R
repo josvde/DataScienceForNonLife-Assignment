@@ -18,6 +18,7 @@ library(dplyr)
 library(tidyverse) # for data manipulation
 library(sf) # for spatial data manipulation
 library(tmap) # for creating maps
+library(gridExtra)
 
 # 0. Import data
 
@@ -218,22 +219,6 @@ print(INS_freq)
 
 ## Plot Frequency graphs
 
-# [RD] I have troubles combined the different plots in one, view. Somebody who can help?
-# [JFVC] this part of code can be deleted?
-Freq.age
-Freq.agecar
-Freq.sex
-Freq.fuel
-Freq.split
-Freq.sportc
-Freq.cover
-Freq.power
-Freq.location
-
-# [JFVC] proposed new combination of graphs
-
-library(gridExtra)
-
 grid.arrange(Freq.age, nrow = 1)
 grid.arrange(Freq.agecar, Freq.sex, Freq.fuel, Freq.split, Freq.use, Freq.fleet, Freq.sportc, Freq.cover, Freq.power, nrow = 3)
 grid.arrange(Freq.location_muni, nrow = 1)
@@ -362,7 +347,7 @@ Sev.use <- ggplot(severity_by_use, aes(x = usec, y = Claim_sev)) +
   theme_bw() +
   geom_bar(stat = "identity", alpha = .5) +
   ggtitle("Claim severity per use of the car")
-Sev.use
+
 
 # Car beloning to a Fleet
 
@@ -376,7 +361,6 @@ Sev.fleet <- ggplot(severity_by_fleet, aes(x = fleetc, y = Claim_sev)) +
   theme_bw() +
   geom_bar(stat = "identity", alpha = .5) +
   ggtitle("Claim severity per fleet type")
-Sev.fleet
 
 # Sport car
 
@@ -422,14 +406,57 @@ Sev.power <- ggplot(severity_by_power, aes(x = powerc, y = Claim_sev)) +
 ## Plot severity graphs
 
 # [RD] I have troubles combined the different plots in one, view. Somebody who can help?
-Sev.age
-Sev.agecar
-Sev.sex
-Sev.fuel
-Sev.split
-Sev.sportc
-Sev.cover
-Sev.power
-Sev.location
 
+grid.arrange(Sev.age, nrow = 1)
+grid.arrange(Sev.agecar, Sev.sex, Sev.fuel, Sev.split, Sev.use, Sev.fleet, Sev.sportc, Sev.cover, Sev.power, nrow = 3)
+#grid.arrange(Freq.location_muni, nrow = 1) #The be added when sev.location is made
+
+
+#### Check for relationship between two varibales #### 
+
+  ## Between age policy holder and age car
+
+      age_policyholder <- Data$AGEPH
+      age_car <- Data$agecar
+      df <- data.frame(age_policyholder, age_car)
+      
+      # create a function to convert age_car to a numeric variable
+      age_car_numeric <- function(age_car) {
+        ifelse(age_car == "0-1", 0.5,
+               ifelse(age_car == "2-5", 3.5,
+                      ifelse(age_car == "6-10", 8,
+                             ifelse(age_car == ">10", 11.5, NA))))
+      }
+      
+      df$age_car_numeric <- age_car_numeric(df$age_car)
+      
+      # calculate the correlation 
+      cor(df$age_policyholder, df$age_car_numeric) 
+
+      
+      cor_result <- cor.test(df$age_policyholder, df$age_car_numeric, method = "pearson", conf.level = 0.95)
+      
+      # print the correlation coefficient and its confidence interval
+      cat("Correlation coefficient:", round(cor_result$estimate, 4), "\n") #0.03325993 there is a  very (weak) positive correlation btwn age of policyholder and age of car)
+      cat("95% confidence interval:", round(cor_result$conf.int, 4), "\n")
+      
+      
+    ## Between Sport Car and Horse Power
+ 
+      df <- data.frame(Data$sportc, Data$powerc)
+      
+      # convert the string variables to numeric values
+      df$sport_car_numeric <- ifelse(df$Data.sportc == 'Yes', 1, 0)
+      df$power_car_numeric <- ifelse(df$Data.powerc == '<66', 0, 
+                                     ifelse(df$Data.powerc == '66-110', 1, 2))
+      summary(df)
+      
+      # calculate the correlation 
+      cor(df$sport_car_numeric, df$power_car_numeric) 
+      cor_result <- cor.test(df$sport_car_numeric, df$power_car_numeric, method = "pearson", conf.level = 0.95)
+      
+      # print the correlation coefficient and its confidence interval
+      cat("Correlation coefficient:", round(cor_result$estimate, 4), "\n") #0.2028925 there is a positive correlation btwn age of policyholder and age of car)
+      cat("95% confidence interval:", round(cor_result$conf.int, 4), "\n")
+      
 
