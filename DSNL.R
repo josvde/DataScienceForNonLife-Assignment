@@ -25,7 +25,9 @@ library(gridExtra)
 
 # 0. Import data
 
-setwd("C:/Users/rdessein/oneDrive - Deloitte (O365D)/Documents/GitHub/DataScienceForNonLife-Assignment")
+dir <- dirname(rstudioapi::getActiveDocumentContext()$path)
+setwd(dir)
+rm(dir)
 
 ### 0.1 Data of "Assinment.csv" and "inspost.xls" merged using VLOOKUP
 
