@@ -432,4 +432,8 @@ Sev.cover
 Sev.power
 Sev.location
 
+# [JFVC] proposed new combination of graphs
 
+grid.arrange(Sev.age, nrow = 1)
+grid.arrange(Sev.agecar, Sev.sex, Sev.fuel, Sev.split, Sev.use, Sev.fleet, Sev.sportc, Sev.cover, Sev.power, nrow = 3)
+grid.arrange(Sev.location_muni, nrow = 1)
