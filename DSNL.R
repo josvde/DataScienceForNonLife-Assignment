@@ -486,3 +486,5 @@ grid.arrange(Sev.agecar, Sev.sex, Sev.fuel, Sev.split, Sev.use, Sev.fleet, Sev.s
   cat("95% confidence interval:", round(cor_result$conf.int, 4), "\n")
   
 
+
+  
