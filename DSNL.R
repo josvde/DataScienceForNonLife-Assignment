@@ -468,13 +468,52 @@ Sev.power <- ggplot(severity_by_power, aes(x = powerc, y = Claim_sev)) +
 
 #### 2.2.11 Location of policyholder ####
 
-#[RD to do]
+  # municipal level 
+  
+    severity_by_Location <- Data_no_out %>%
+      select(LONG, LAT,severity)
+    
+    Sev.location <- ggplot(severity_by_Location, aes(x = LONG, y = LAT, size = severity)) + 
+      geom_point(alpha = 0.5) +
+      labs(title = "Claim severity by location (municipal)") +
+      scale_size(range = c(1, 10),
+                 labels = function(x) sprintf("%.1f", x))
+        
+    frequency_by_Commune <- DataFreq %>%
+      group_by(COMMUNE) %>%
+      summarize(avg_freq = sum(nbrtotc)/sum(duree))
+  
+  # province level
+  
+    # limit the link 
+    DataSev_INS1 <- Data_no_out %>%
+      mutate(INS = ifelse(substr(INS, 1, 1) == "2", 
+                          ifelse(substr(INS, 1, 2) == "21", "21",
+                                 ifelse(substr(INS, 1, 2) %in% c("23", "24"), "23",
+                                        ifelse(substr(INS, 1, 2) == "25", "25", "2"))),
+                          substr(INS, 1, 1)))
+    
+    INS_Sev <- DataSev_INS1 %>%
+      group_by(INS) %>%
+      summarise(Claim_sev = sum(chargtot) / sum(nbrtotc))
+    
+    # Define the mapping dataset for Belgium provinces
+    province_mapping <- data.frame(INS = c("1","21","23", "25", "3", "4", "5", "6", "7", "8", "9"),
+                                   Province = c("Antwerp", "Brussels Capital Region", "Flemish Brabant", "Walloon Brabant", "West Flanders",
+                                                "East flanders", "Hainaut", "Liége",
+                                                "Limburg", "Luxembourg", "Namur"))
+    
+    # Merge the mapping dataset with INS_freq based on the INS column
+    INS_sev_with_province <- merge(INS_Sev, province_mapping, by = "INS")
+    
+    print(INS_sev_with_province)
+
 
 #### Plot Severity graphs  ####
 
 grid.arrange(Sev.age, nrow = 1)
 grid.arrange(Sev.agecar, Sev.sex, Sev.fuel, Sev.split, Sev.use, Sev.fleet, Sev.sportc, Sev.cover, Sev.power, nrow = 3)
-#grid.arrange(Freq.location_muni, nrow = 1) #The be added when sev.location is made
+grid.arrange(Sev.location, nrow = 1) 
 
 
 ############ Section 2.3 Check for relationship between two variables ############ 
