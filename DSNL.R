@@ -210,7 +210,7 @@ frequency_by_Location_muni <- DataFreq %>%
 
 Freq.location_muni <- ggplot(frequency_by_Location_muni, aes(x = LONG, y = LAT, color=frequency,size = frequency)) + 
   geom_point(alpha = 0.5) +
-  labs(title="Claim frequency by location (municipal)", color = "Frequency")
+  labs(title="Claim frequency by location (municipal)")
 
   # district level
 
@@ -225,14 +225,29 @@ print(INS_freq)
 
   # province level
 
+  # limit the link 
 DataFreq_INS1 <- DataFreq %>%
-  mutate(INS = substr(INS, 1, 1))
+  mutate(INS = ifelse(substr(INS, 1, 1) == "2", 
+                      ifelse(substr(INS, 1, 2) == "21", "21",
+                             ifelse(substr(INS, 1, 2) %in% c("23", "24"), "23",
+                                    ifelse(substr(INS, 1, 2) == "25", "25", "2"))),
+                      substr(INS, 1, 1)))
 
-INS_freq <- DataFreq %>%
+INS_freq <- DataFreq_INS1 %>%
   group_by(INS) %>%
-  summarise(avg_freq = sum(nbrtotc)/sum(duree))
+  summarise(avg_freq = sum(nbrtotc) / sum(duree))
 
-print(INS_freq)
+  # Define the mapping dataset for Belgium provinces
+  province_mapping <- data.frame(INS = c("1","21","23", "25", "3", "4", "5", "6", "7", "8", "9"),
+                                 Province = c("Antwerp", "Brussels Capital Region", "Flemish Brabant", "Walloon Brabant", "West Flanders",
+                                              "East flanders", "Hainaut", "Liége",
+                                              "Limburg", "Luxembourg", "Namur"))
+  
+  # Merge the mapping dataset with INS_freq based on the INS column
+  INS_freq_with_province <- merge(INS_freq, province_mapping, by = "INS")
+  
+  print(INS_freq_with_province)
+
 
 
 #### Plot Frequency graphs  ####
