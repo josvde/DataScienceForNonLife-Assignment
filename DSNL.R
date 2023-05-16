@@ -75,7 +75,7 @@ Data <- as.data.table(read.csv("DataCombined.csv", header=TRUE, sep=";", dec="."
   
   Freq.agecar <- ggplot(frequency_by_agecar, aes(x = agecar, y = avg_freq)) +
     theme_bw() +
-    geom_bar(stat = "Age Car", alpha = 0.5) +
+    geom_bar(stat = "identity", alpha = 0.5) +
     ggtitle("Age policyholder") +
     labs(x = "", y = "Claim Frequency") +
     theme(plot.title = element_text(hjust = 0.5))
@@ -123,8 +123,8 @@ Data <- as.data.table(read.csv("DataCombined.csv", header=TRUE, sep=";", dec="."
   Freq.split <- ggplot(frequency_by_split, aes(x = split, y = avg_freq)) + 
     theme_bw() +
     geom_bar(stat = "identity", alpha = .5) +
-    ggtitle("Age policyholder") +
-    labs(x = "", y = "Claim split") +
+    ggtitle("Claim split") +
+    labs(x = "", y = "Claim Frequency") +
     theme(plot.title = element_text(hjust = 0.5))
 
 #### 2.1.6 Use of Car ####
@@ -262,10 +262,8 @@ grid.arrange(Freq.location, nrow = 1)
   
   
   ## Check for outliers 
-    boxplot(DataCleaned$chargtot) #many outliers, one extreme outlier 1989567.9 
-    hist(DataCleaned$chargtot)
-    
-    
+    boxplot(DataCleaned$chargtot, main = "Total claim amount") #many outliers, one extreme outlier 1989567.9 
+
     # get mean and Standard deviation
       mean = mean(DataCleaned$chargtot)
       std = sd(DataCleaned$chargtot)
@@ -273,27 +271,27 @@ grid.arrange(Freq.location, nrow = 1)
     # get threshold values for outlines
       Tmax = mean+(3*std) 
       Tmax #outliers are all values above 54 286
+
+      table(Data$chargtot > Tmax)["TRUE"] #35 values above Tmax2
       
     # We have to be carefull as the distribution is assymetrix. Therefore we investigate the tail above 54 286
       
       ggplot(DataCleaned, aes(x = chargtot)) +
-        geom_histogram(bins = 100, fill = "blue", color = "black", data = subset(DataCleaned, chargtot > Tmax)) +
+        geom_histogram(bins = 100, data = subset(DataCleaned, chargtot > Tmax)) +
         scale_x_continuous(breaks = seq(min(DataCleaned$chargtot), max(DataCleaned$chargtot), length.out = 15), labels = comma_format(accuracy = 1)) +
-        labs(x = "Total Claim amount", y = "Frequency", title = "Histogram of tail values") +
+        labs(x = "Total claim amount", y = "Frequency", title = "Histogram of tail values") +
         theme(plot.title = element_text(hjust = 0.5))
     
-    # We visually identify ???142,112 as a valid outlier
+    # We visually identify 142,112 as a valid outlier
       
-      Tmax=142112
+      Tmax2=142112
       
         
     # find outlier
-      table(Data$chargtot > Tmax)["TRUE"] #12 values omitted
+      table(Data$chargtot > Tmax2)["TRUE"] #12 values above Tmax2
       
-      Data_no_out <- DataCleaned[which(DataCleaned$chargtot < Tmax),]
+      Data_no_out <- DataCleaned[which(DataCleaned$chargtot < Tmax2),]
       
-      boxplot(Data_no_out$chargtot)
-  
   ## Check average claim 
   
     # With Outliers    
