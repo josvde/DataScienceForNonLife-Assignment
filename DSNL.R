@@ -203,50 +203,44 @@ Freq.power <- ggplot(frequency_by_power, aes(x = powerc, y = avg_freq)) +
   theme(plot.title = element_text(hjust = 0.5))
 
 #### 2.1.11 Location of policyholder  ####
-  # municipal level (including map based on Long/Lat)
+  # municipal level 
 
-frequency_by_Location_muni <- DataFreq %>%
-  select(LONG, LAT,frequency)
-
-Freq.location_muni <- ggplot(frequency_by_Location_muni, aes(x = LONG, y = LAT, color=frequency,size = frequency)) + 
-  geom_point(alpha = 0.5) +
-  labs(title="Claim frequency by location (municipal)")
-
-  # district level
-
-DataFreq_INS2 <- DataFreq %>%
-  mutate(INS = substr(INS, 1, 2))
-
-INS_freq <- DataFreq %>%
-  group_by(INS) %>%
-  summarise(avg_freq = sum(nbrtotc)/sum(duree))
-
-print(INS_freq)
+    frequency_by_Location <- DataFreq %>%
+      select(LONG, LAT,frequency)
+  
+    Freq.location <- ggplot(frequency_by_Location, aes(x = LONG, y = LAT, size = frequency)) + 
+      geom_point(alpha = 0.5) +
+      labs(title = "Claim frequency by location (municipal)") +
+      scale_size(range = c(1, 10))  # Increase the size of points
+  
+    frequency_by_Commune <- DataFreq %>%
+      group_by(COMMUNE) %>%
+      summarize(avg_freq = sum(nbrtotc)/sum(duree))
 
   # province level
 
-  # limit the link 
-DataFreq_INS1 <- DataFreq %>%
-  mutate(INS = ifelse(substr(INS, 1, 1) == "2", 
+    # limit the link 
+    DataFreq_INS1 <- DataFreq %>%
+      mutate(INS = ifelse(substr(INS, 1, 1) == "2", 
                       ifelse(substr(INS, 1, 2) == "21", "21",
                              ifelse(substr(INS, 1, 2) %in% c("23", "24"), "23",
                                     ifelse(substr(INS, 1, 2) == "25", "25", "2"))),
                       substr(INS, 1, 1)))
 
-INS_freq <- DataFreq_INS1 %>%
-  group_by(INS) %>%
-  summarise(avg_freq = sum(nbrtotc) / sum(duree))
+    INS_freq <- DataFreq_INS1 %>%
+      group_by(INS) %>%
+      summarise(avg_freq = sum(nbrtotc) / sum(duree))
 
-  # Define the mapping dataset for Belgium provinces
-  province_mapping <- data.frame(INS = c("1","21","23", "25", "3", "4", "5", "6", "7", "8", "9"),
+    # Define the mapping dataset for Belgium provinces
+    province_mapping <- data.frame(INS = c("1","21","23", "25", "3", "4", "5", "6", "7", "8", "9"),
                                  Province = c("Antwerp", "Brussels Capital Region", "Flemish Brabant", "Walloon Brabant", "West Flanders",
                                               "East flanders", "Hainaut", "Liége",
                                               "Limburg", "Luxembourg", "Namur"))
   
-  # Merge the mapping dataset with INS_freq based on the INS column
-  INS_freq_with_province <- merge(INS_freq, province_mapping, by = "INS")
-  
-  print(INS_freq_with_province)
+    # Merge the mapping dataset with INS_freq based on the INS column
+    INS_freq_with_province <- merge(INS_freq, province_mapping, by = "INS")
+    
+    print(INS_freq_with_province)
 
 
 
@@ -254,7 +248,7 @@ INS_freq <- DataFreq_INS1 %>%
 
 grid.arrange(Freq.age, nrow = 1)
 grid.arrange(Freq.agecar, Freq.sex, Freq.fuel, Freq.split, Freq.use, Freq.fleet, Freq.sportc, Freq.cover, Freq.power, nrow = 3)
-grid.arrange(Freq.location_muni, nrow = 1)
+grid.arrange(Freq.location, nrow = 1)
 
 ############ Section 2.2 Severity Data #############
 
