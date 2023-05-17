@@ -514,68 +514,40 @@ grid.arrange(Sev.agecar, Sev.sex, Sev.fuel, Sev.split, Sev.use, Sev.fleet, Sev.s
 grid.arrange(Sev.location, nrow = 1) 
 
 
-############ Section 2.3 Check for relationship between two variables ############ 
+############ Section 2.3 Correlation matrix ############ 
 
-#### 2.3.1 Between age policy holder and age car ####
 
-  age_policyholder <- Data$AGEPH
-  age_car <- Data$agecar
-  df <- data.frame(age_policyholder, age_car)
   
-  # create a function to convert age_car to a numeric variable
+  df <- data.frame(age_policyholder,age_car,Data$sexp, Data$fuelc, Data$split, Data$usec, Data$fleet, Data$sportc, Data$powerc, Data$coverp)
+  
+  # convert the string variables to numeric values
   age_car_numeric <- function(age_car) {
     ifelse(age_car == "0-1", 0.5,
            ifelse(age_car == "2-5", 3.5,
                   ifelse(age_car == "6-10", 8,
                          ifelse(age_car == ">10", 11.5, NA))))
   }
-  
   df$age_car_numeric <- age_car_numeric(df$age_car)
-  
-  # calculate the correlation 
-  cor(df$age_policyholder, df$age_car_numeric) 
-
-  
-  cor_result <- cor.test(df$age_policyholder, df$age_car_numeric, method = "pearson", conf.level = 0.95)
-  
-  # print the correlation coefficient and its confidence interval
-  cat("Correlation coefficient:", round(cor_result$estimate, 4), "\n") #0.03325993 there is a  very (weak) positive correlation btwn age of policyholder and age of car)
-  cat("95% confidence interval:", round(cor_result$conf.int, 4), "\n")
-  
-  
-#### 2.3.2 Between Sport Car and Horse Power ####
-
-  df <- data.frame(Data$sportc, Data$powerc)
-  
-  # convert the string variables to numeric values
-  df$sport_car_numeric <- ifelse(df$Data.sportc == 'Yes', 1, 0)
-  df$power_car_numeric <- ifelse(df$Data.powerc == '<66', 0, 
-                                 ifelse(df$Data.powerc == '66-110', 1, 2))
-  summary(df)
-  
-  # calculate the correlation 
-  cor(df$sport_car_numeric, df$power_car_numeric) 
-  cor_result <- cor.test(df$sport_car_numeric, df$power_car_numeric, method = "pearson", conf.level = 0.95)
-  
-  # print the correlation coefficient and its confidence interval
-  cat("Correlation coefficient:", round(cor_result$estimate, 4), "\n") #0.2028925 there is a positive correlation btwn age of policyholder and age of car)
-  cat("95% confidence interval:", round(cor_result$conf.int, 4), "\n")
-  
-#### 2.3.3 Between Sport Car and Fuel type ####
-  
-  df <- data.frame(Data$fuelc, Data$powerc)
-  
-  # convert the string variables to numeric values
+  df$gender_numeric <- ifelse(df$Data.sexp == 'Male', 1, 0)
   df$fuel_type_numeric <- ifelse(df$Data.fuelc == 'Gasoil', 1, 0)
+  df$split_numeric <- ifelse(df$Data.split == '<Once', 0, 
+                             ifelse(df$Data.split == 'Twice', 1, 
+                                    ifelse(df$Data.split == 'Thrice', 2, 3)))
+
+  df$usec_numeric <- ifelse(df$Data.usec == 'Private', 1, 0)
+  df$Fleet_numeric <- ifelse(df$Data.fleet == 'Yes', 1, 0)
+  df$sport_car_numeric <- ifelse(df$Data.sportc == 'Yes', 1, 0)
+  df$coverage_numeric <- ifelse(df$Data.coverp == '<MTPL', 0, 
+                                 ifelse(df$Data.coverp == 'MTPL+', 1, 2))
   df$power_car_numeric <- ifelse(df$Data.powerc == '<66', 0, 
                                  ifelse(df$Data.powerc == '66-110', 1, 2))
-  summary(df)
+
   
-  # calculate the correlation 
-  cor(df$fuel_type_numeric, df$power_car_numeric) 
-  cor_result <- cor.test(df$fuel_type_numeric, df$power_car_numeric, method = "pearson", conf.level = 0.95)
+  correlation_table <- round(cor(df[, c("age_policyholder", "age_car_numeric", "gender_numeric", "fuel_type_numeric", 
+                                        "split_numeric", "usec_numeric", "Fleet_numeric", "sport_car_numeric", 
+                                        "power_car_numeric", "coverage_numeric")]), 4)
   
-  # print the correlation coefficient and its confidence interval
-  cat("Correlation coefficient:", round(cor_result$estimate, 4), "\n") #-0.0904  there is almost no correlation btwn power and fuel type)
-  cat("95% confidence interval:", round(cor_result$conf.int, 4), "\n")
+  print(correlation_table)
+
+
   
