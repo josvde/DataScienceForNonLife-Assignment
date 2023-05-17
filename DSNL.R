@@ -27,6 +27,10 @@ rm(dir)
 
 Data <- as.data.table(read.csv("DataCombined.csv", header=TRUE, sep=";", dec="."))
 
+lapply(Data,class)
+
+
+
 ## Frequency
 
   frequency <- Data$nbrtotc / Data$duree #number of claims during (period of) exposure di. Please not the second observation of (very) high (21). This is because one claim happened during a very short period (di=0.04)
@@ -234,14 +238,16 @@ Freq.power <- ggplot(frequency_by_power, aes(x = powerc, y = avg_freq)) +
     # Define the mapping dataset for Belgium provinces
     province_mapping <- data.frame(INS = c("1","21","23", "25", "3", "4", "5", "6", "7", "8", "9"),
                                  Province = c("Antwerp", "Brussels Capital Region", "Flemish Brabant", "Walloon Brabant", "West Flanders",
-                                              "East flanders", "Hainaut", "Liége",
+                                              "East flanders", "Hainaut", "Liège",
                                               "Limburg", "Luxembourg", "Namur"))
   
     # Merge the mapping dataset with INS_freq based on the INS column
     INS_freq_with_province <- merge(INS_freq, province_mapping, by = "INS")
     
-    print(INS_freq_with_province)
-
+    INS_freq_with_province_sorted <- INS_freq_with_province %>%
+      arrange(desc(avg_freq))
+    
+    print(INS_freq_with_province_sorted)
 
 
 #### Plot Frequency graphs  ####
@@ -476,10 +482,7 @@ Sev.power <- ggplot(severity_by_power, aes(x = powerc, y = Claim_sev)) +
       labs(title = "Claim severity by location (municipal)") +
       scale_size(range = c(1, 10),
                  labels = function(x) sprintf("%.1f", x))
-        
-    frequency_by_Commune <- DataFreq %>%
-      group_by(COMMUNE) %>%
-      summarize(avg_freq = sum(nbrtotc)/sum(duree))
+      
   
   # province level
   
@@ -498,13 +501,16 @@ Sev.power <- ggplot(severity_by_power, aes(x = powerc, y = Claim_sev)) +
     # Define the mapping dataset for Belgium provinces
     province_mapping <- data.frame(INS = c("1","21","23", "25", "3", "4", "5", "6", "7", "8", "9"),
                                    Province = c("Antwerp", "Brussels Capital Region", "Flemish Brabant", "Walloon Brabant", "West Flanders",
-                                                "East flanders", "Hainaut", "Liége",
+                                                "East flanders", "Hainaut", "Liège",
                                                 "Limburg", "Luxembourg", "Namur"))
     
     # Merge the mapping dataset with INS_freq based on the INS column
     INS_sev_with_province <- merge(INS_Sev, province_mapping, by = "INS")
     
-    print(INS_sev_with_province)
+    INS_sev_with_province_sorted <- INS_sev_with_province %>%
+      arrange(desc(Claim_sev))
+    
+    print(INS_sev_with_province_sorted)
 
 
 #### Plot Severity graphs  ####
@@ -518,36 +524,40 @@ grid.arrange(Sev.location, nrow = 1)
 
 
   
-  df <- data.frame(age_policyholder,age_car,Data$sexp, Data$fuelc, Data$split, Data$usec, Data$fleet, Data$sportc, Data$powerc, Data$coverp)
-  
-  # convert the string variables to numeric values
-  age_car_numeric <- function(age_car) {
-    ifelse(age_car == "0-1", 0.5,
-           ifelse(age_car == "2-5", 3.5,
-                  ifelse(age_car == "6-10", 8,
-                         ifelse(age_car == ">10", 11.5, NA))))
-  }
-  df$age_car_numeric <- age_car_numeric(df$age_car)
-  df$gender_numeric <- ifelse(df$Data.sexp == 'Male', 1, 0)
-  df$fuel_type_numeric <- ifelse(df$Data.fuelc == 'Gasoil', 1, 0)
-  df$split_numeric <- ifelse(df$Data.split == '<Once', 0, 
-                             ifelse(df$Data.split == 'Twice', 1, 
-                                    ifelse(df$Data.split == 'Thrice', 2, 3)))
+df <- data.frame(Data$AGEPH, Data$agec, Data$sexp, Data$fuelc, Data$split, Data$usec, Data$fleet, Data$sportc, Data$powerc, Data$coverp)
 
-  df$usec_numeric <- ifelse(df$Data.usec == 'Private', 1, 0)
-  df$Fleet_numeric <- ifelse(df$Data.fleet == 'Yes', 1, 0)
-  df$sport_car_numeric <- ifelse(df$Data.sportc == 'Yes', 1, 0)
-  df$coverage_numeric <- ifelse(df$Data.coverp == '<MTPL', 0, 
-                                 ifelse(df$Data.coverp == 'MTPL+', 1, 2))
-  df$power_car_numeric <- ifelse(df$Data.powerc == '<66', 0, 
-                                 ifelse(df$Data.powerc == '66-110', 1, 2))
+# Rename the columns
+colnames(df) <- c("age", "age_car", "gender", "fuel", "split", "use_car", "fleet", "sportcar", "power_car", "coverage")
 
-  
-  correlation_table <- round(cor(df[, c("age_policyholder", "age_car_numeric", "gender_numeric", "fuel_type_numeric", 
-                                        "split_numeric", "usec_numeric", "Fleet_numeric", "sport_car_numeric", 
-                                        "power_car_numeric", "coverage_numeric")]), 4)
-  
-  print(correlation_table)
+# Convert the string variables to numeric values
+df$age <- df$age
 
+age_car_numeric <- function(age_car) {
+  ifelse(age_car == "0-1", 0.5,
+         ifelse(age_car == "2-5", 3.5,
+                ifelse(age_car == "6-10", 8,
+                       ifelse(age_car == ">10", 11.5, NA))))
+}
+
+df$age_car <- age_car_numeric(df$age_car)
+df$gender <- ifelse(df$gender == 'Male', 1, 0)
+df$fuel <- ifelse(df$fuel == 'Gasoil', 1, 0)
+df$split <- ifelse(df$split == '<Once', 0,
+                   ifelse(df$split == 'Twice', 1,
+                          ifelse(df$split == 'Thrice', 2, 3)))
+
+df$use_car <- ifelse(df$use_car == 'Private', 1, 0)
+df$fleet <- ifelse(df$fleet == 'Yes', 1, 0)
+df$sportcar <- ifelse(df$sportcar == 'Yes', 1, 0)
+df$coverage <- ifelse(df$coverage == '<MTPL', 0,
+                      ifelse(df$coverage == 'MTPL+', 1, 2))
+df$power_car <- ifelse(df$power_car == '<66', 0,
+                       ifelse(df$power_car == '66-110', 1, 2))
+
+correlation_table <- round(cor(df[, c("age", "age_car", "gender", "use_car",
+                                      "split", "fleet", "sportcar",
+                                      "power_car", "coverage")]), 2)
+
+print(correlation_table)
 
   
