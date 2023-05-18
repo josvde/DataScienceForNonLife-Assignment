@@ -7,7 +7,7 @@
 
 setwd("C:/Users/rdessein/oneDrive - Deloitte (O365D)/Documents/GitHub/DataScienceForNonLife-Assignment")
 
-### 0.1 Data of "Assinment.csv" and "inspost.xls" merged using VLOOKUP
+### 0.1 Data of "Assignment.csv" and "inspost.xls" merged using VLOOKUP
 
 ### 0.2 import dataframe
 library(ggplot2)
@@ -28,8 +28,6 @@ rm(dir)
 Data <- as.data.table(read.csv("DataCombined.csv", header=TRUE, sep=";", dec="."))
 
 lapply(Data,class)
-
-
 
 ## Frequency
 
@@ -263,13 +261,46 @@ grid.arrange(Freq.location, nrow = 1)
 
   ## remove observations without no claims
   
-    DataCleaned <- DataSev[which(DataSev$nbrtotc  > 0),]
     DataCleaned <- DataSev[which(DataSev$chargtot  > 0),]
-  
-  
+
+  ## plot geometric density graphs
+
+    plot.eda1 <- ggplot(data = DataCleaned, aes(chargtot)) +
+      geom_density(adjust = 3, fill = "lightgrey", alpha = 0.5) +
+      ylab("Relative Frequency") +
+      xlab("Severity") +
+      theme_bw() +
+      scale_y_continuous(labels = scales::comma)
+    
+    plot.eda1
+    
+    
+    plot.eda2 <- ggplot(data = DataCleaned, aes(chargtot)) +
+      geom_density(adjust = 3, fill = "lightgrey", alpha = 0.5) +
+      xlim(0, 150000) +
+      ylab("Relative Frequency") +
+      xlab("Severity") +
+      theme_bw() +
+      scale_y_continuous(labels = scales::comma)
+    
+    plot.eda2
+    
+    
+    plot.eda3 <- ggplot(data = DataCleaned, aes(chargtot)) +
+      geom_density(adjust = 3, fill = "lightgrey", alpha = 0.5) +
+      xlim(0, 10000) +
+      ylab("Relative Frequency") +
+      xlab("Severity") +
+      theme_bw() +
+      scale_y_continuous(labels = scales::comma)
+    
+    plot.eda3
+
   ## Check for outliers 
     boxplot(DataCleaned$chargtot, main = "Total claim amount") #many outliers, one extreme outlier 1989567.9 
 
+    plot(DataCleaned$chargtot, DataSev$nbrtotc, xlab = "Severity", ylab = "Frequency", main = "Frequency vs. Severity", pch = 16)
+    
     # get mean and Standard deviation
       mean = mean(DataCleaned$chargtot)
       std = sd(DataCleaned$chargtot)
@@ -559,5 +590,8 @@ correlation_table <- round(cor(df[, c("age", "age_car", "gender", "use_car",
                                       "power_car", "coverage")]), 2)
 
 print(correlation_table)
+
+############ Section 2.4 Frequency & Severity Combined ############ 
+
 
   
