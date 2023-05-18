@@ -207,9 +207,12 @@ frequency_by_power <- DataFreq %>%
 
 frequency_by_power
 
-Freq.power <- ggplot(frequency_by_power, aes(x = powerc, y = avg_freq)) + 
+frequency_by_power$powerc <- factor(frequency_by_power$powerc,
+                                    levels = c("<66", "66-110", ">110"))
+
+Freq.power <- ggplot(frequency_by_power, aes(x = powerc, y = avg_freq)) +
   theme_bw() +
-  geom_bar(stat = "identity", alpha = .5) +
+  geom_bar(stat = "identity", alpha = 0.5) +
   ggtitle("Horsepower") +
   labs(x = "", y = "Claim Frequency") +
   theme(plot.title = element_text(hjust = 0.5))
@@ -217,13 +220,14 @@ Freq.power <- ggplot(frequency_by_power, aes(x = powerc, y = avg_freq)) +
 #### 2.1.11 Location of policyholder  ####
   # municipal level 
 
-    frequency_by_Location <- DataFreq %>%
-      select(LONG, LAT,frequency)
+  averaged_frequency <- DataFreq %>%
+    group_by(LONG, LAT) %>%
+    summarize(avg_frequency = mean(frequency))
   
-    Freq.location <- ggplot(frequency_by_Location, aes(x = LONG, y = LAT, size = frequency)) + 
-      geom_point(alpha = 0.5) +
-      labs(title = "Claim frequency by location (municipal)") +
-      scale_size(range = c(1, 10))  # Increase the size of points
+  Freq.location <- ggplot(averaged_frequency, aes(x = LONG, y = LAT, size = avg_frequency)) + 
+    geom_point(alpha = 0.5) +
+    labs(title = "Average claim frequency by location (municipal)") +
+    scale_size(range = c(1, 10))
   
     frequency_by_Commune <- DataFreq %>%
       group_by(COMMUNE) %>%
@@ -512,28 +516,33 @@ severity_by_power <- Data_no_out %>%
   group_by(powerc) %>%
   summarize(Claim_sev = sum(chargtot) / sum(nbrtotc))
 
-severity_by_power
+severity_by_power$powerc <- factor(severity_by_power$powerc,
+                                   levels = c("<66", "66-110", ">110"))
 
-Sev.power <- ggplot(severity_by_power, aes(x = powerc, y = Claim_sev)) + 
+Sev.power <- ggplot(severity_by_power, aes(x = powerc, y = Claim_sev)) +
   theme_bw() +
-  geom_bar(stat = "identity", alpha = .5) +
+  geom_bar(stat = "identity", alpha = 0.5) +
   ggtitle("Horsepower") +
   labs(x = "", y = "Claim Severity") +
   theme(plot.title = element_text(hjust = 0.5))
+
 
 #### 2.2.11 Location of policyholder ####
 
   # municipal level 
   
-    severity_by_Location <- Data_no_out %>%
-      select(LONG, LAT,severity)
-    
-    Sev.location <- ggplot(severity_by_Location, aes(x = LONG, y = LAT, size = severity)) + 
+    averaged_severity <- Data_no_out %>%
+      group_by(LONG, LAT) %>%
+      summarise(avg_severity = mean(severity))
+        
+    Sev.location <- ggplot(averaged_severity, aes(x = LONG, y = LAT, size = avg_severity)) + 
       geom_point(alpha = 0.5) +
-      labs(title = "Claim severity by location (municipal)") +
+      labs(title = "Average claim severity by location (municipal)") +
       scale_size(range = c(1, 10),
                  labels = function(x) sprintf("%.1f", x))
-      
+    
+    print(Sev.location)
+
   
   # province level
   
@@ -611,7 +620,6 @@ correlation_table <- round(cor(df[, c("age", "age_car", "gender", "use_car",
 
 print(correlation_table)
 
-############ Section 2.4 Frequency & Severity Combined ############ 
 
 
   
