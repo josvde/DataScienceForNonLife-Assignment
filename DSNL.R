@@ -1,15 +1,21 @@
 ##########################################
-## Assignment Data science for None-Life ##
+## Assignment Data science for None-Life##
+## Jean-Ferdinand van Cauwenbergh       ##
+## Jos Van den Eynde                    ## 
+## Robin Dessein                        ##
 ##########################################
 
+############# 0. Import Data #############
 
-# 0. Import data
 
-setwd("C:/Users/rdessein/oneDrive - Deloitte (O365D)/Documents/GitHub/DataScienceForNonLife-Assignment")
+## Dataframes
+# Data -> Data provided on Toledo
+# DataCleaned -> Data where policyholders that reported zero claims are omitted 
+# Data_no_out -> DataCleaned + removal outliers
+# Tmax -> Claim amounts above this value is considered as an outlier
 
 ### 0.1 Data of "Assignment.csv" and "inspost.xls" merged using VLOOKUP
 
-### 0.2 import dataframe
 library(ggplot2)
 library(data.table)
 library(dplyr)
@@ -20,7 +26,6 @@ library(gridExtra)
 library(grid)
 library(scales)
 
-
 dir <- dirname(rstudioapi::getActiveDocumentContext()$path)
 setwd(dir)
 rm(dir)
@@ -28,6 +33,8 @@ rm(dir)
 Data <- as.data.table(read.csv("DataCombined.csv", header=TRUE, sep=";", dec="."))
 
 lapply(Data,class)
+
+############# Section 2. Descriptive analysis #############
 
 ## Frequency
 
@@ -82,6 +89,7 @@ lapply(Data,class)
     labs(x = "", y = "Claim Frequency") +
     theme(plot.title = element_text(hjust = 0.5))
 
+
 #### 2.1.3 Gender of policyholder ####
   
   frequency_by_sex <- DataFreq %>%
@@ -97,7 +105,6 @@ lapply(Data,class)
     labs(x = "", y = "Claim Frequency") +
     theme(plot.title = element_text(hjust = 0.5))
 
-
 #### 2.1.4 Type of fuel ####
   
   frequency_by_fuel <- DataFreq %>%
@@ -112,6 +119,7 @@ lapply(Data,class)
     ggtitle("Fuel type") +
     labs(x = "", y = "Claim Frequency") +
     theme(plot.title = element_text(hjust = 0.5))
+
   
 #### 2.1.5 Frequency premium ####
   
@@ -129,6 +137,7 @@ lapply(Data,class)
     labs(x = "", y = "Claim Frequency") +
     theme(plot.title = element_text(hjust = 0.5))
 
+
 #### 2.1.6 Use of Car ####
   
   frequency_by_use <- DataFreq %>%
@@ -144,6 +153,7 @@ lapply(Data,class)
     labs(x = "", y = "Claim Frequency") +
     theme(plot.title = element_text(hjust = 0.5))
 
+
 #### 2.1.7 Fleet ####
   
   frequency_by_fleet <- DataFreq %>%
@@ -158,7 +168,7 @@ lapply(Data,class)
     ggtitle("Fleet type") +
     labs(x = "", y = "Claim Frequency") +
     theme(plot.title = element_text(hjust = 0.5))
-  
+
 #### 2.1.8 Sportcar ####
 
   frequency_by_sport <- DataFreq %>%
@@ -188,7 +198,7 @@ lapply(Data,class)
     ggtitle("Coverage") +
     labs(x = "", y = "Claim Frequency") +
     theme(plot.title = element_text(hjust = 0.5))
-  
+
 #### 2.1.10 Horsepower of the car ####
   
 frequency_by_power <- DataFreq %>%
@@ -236,7 +246,7 @@ Freq.power <- ggplot(frequency_by_power, aes(x = powerc, y = avg_freq)) +
     # Define the mapping dataset for Belgium provinces
     province_mapping <- data.frame(INS = c("1","21","23", "25", "3", "4", "5", "6", "7", "8", "9"),
                                  Province = c("Antwerp", "Brussels Capital Region", "Flemish Brabant", "Walloon Brabant", "West Flanders",
-                                              "East Flanders", "Hainaut", "Liège",
+                                              "East Flanders", "Hainaut", "Liï¿½ge",
                                               "Limburg", "Luxembourg", "Namur"))
   
     # Merge the mapping dataset with INS_freq based on the INS column
@@ -247,12 +257,12 @@ Freq.power <- ggplot(frequency_by_power, aes(x = powerc, y = avg_freq)) +
     
     print(INS_freq_with_province_sorted)
 
-
 #### Plot Frequency graphs  ####
 
 grid.arrange(Freq.age, nrow = 1)
 grid.arrange(Freq.agecar, Freq.sex, Freq.fuel, Freq.split, Freq.use, Freq.fleet, Freq.sportc, Freq.cover, Freq.power, nrow = 3)
 grid.arrange(Freq.location, nrow = 1)
+
 
 ############ Section 2.2 Severity Data #############
 
@@ -301,6 +311,7 @@ grid.arrange(Freq.location, nrow = 1)
 
     plot(DataCleaned$chargtot, DataSev$nbrtotc, xlab = "Severity", ylab = "Frequency", main = "Frequency vs. Severity", pch = 16)
     
+
     # get mean and Standard deviation
       mean = mean(DataCleaned$chargtot)
       std = sd(DataCleaned$chargtot)
@@ -329,6 +340,7 @@ grid.arrange(Freq.location, nrow = 1)
       
       Data_no_out <- DataCleaned[which(DataCleaned$chargtot < Tmax2),]
       
+
   ## Check average claim 
   
     # With Outliers    
@@ -338,6 +350,7 @@ grid.arrange(Freq.location, nrow = 1)
       # Without Outliers    
       avgr_claim_no_out <- sum(Data_no_out$chargtot)/sum(Data_no_out$nbrtotc)
       avgr_claim_no_out #claim mean = 1347.709 per year  
+
       
 
 #### 2.2.1 Age of policyholder ####
@@ -355,6 +368,7 @@ grid.arrange(Freq.location, nrow = 1)
     ggtitle("Age policyholder") +
     labs(x = "", y = "Claim Severity") +
     theme(plot.title = element_text(hjust = 0.5))
+
 
 
 #### 2.2.2 Age of car #### 
@@ -375,6 +389,7 @@ grid.arrange(Freq.location, nrow = 1)
     ggtitle("Age car") +
     labs(x = "", y = "Claim Severity") +
     theme(plot.title = element_text(hjust = 0.5))
+
 
 
 #### 2.2.3 Gender of policyholder #### 
@@ -408,6 +423,7 @@ grid.arrange(Freq.location, nrow = 1)
     theme(plot.title = element_text(hjust = 0.5))
 
 
+
 #### 2.2.5 Frequency premium ####
 
 severity_by_split <- Data_no_out %>%
@@ -422,6 +438,7 @@ Sev.split <- ggplot(severity_by_split, aes(x = split, y = Claim_sev)) +
   ggtitle("Claim split") +
   labs(x = "", y = "Claim Severity") +
   theme(plot.title = element_text(hjust = 0.5))
+
 
 
 #### 2.2.6 Use of Car ####
@@ -440,6 +457,7 @@ Sev.use <- ggplot(severity_by_use, aes(x = usec, y = Claim_sev)) +
   theme(plot.title = element_text(hjust = 0.5))
 
 
+
 #### 2.2.7 Fleet #### 
 
 severity_by_fleet <- Data_no_out %>%
@@ -454,6 +472,7 @@ Sev.fleet <- ggplot(severity_by_fleet, aes(x = fleetc, y = Claim_sev)) +
   ggtitle("Fleet type") +
   labs(x = "", y = "Claim Severity") +
   theme(plot.title = element_text(hjust = 0.5))
+
 
 #### 2.2.8 Sportcar ####
 
@@ -479,13 +498,14 @@ severity_by_cover <- Data_no_out %>%
 
 severity_by_cover 
 
-Sev.cover <- ggplot(severity_by_cover, aes(x = coverp, y = avg_freq)) + 
+Sev.cover <- ggplot(severity_by_cover, aes(x = coverp, y = Claim_sev)) + 
   theme_bw() +
   geom_bar(stat = "identity", alpha = .5) +
   ggtitle("Coverage") +
   labs(x = "", y = "Claim Severity") +
   theme(plot.title = element_text(hjust = 0.5))
   
+
 #### 2.2.10 Horsepower of the car ####
 
 severity_by_power <- Data_no_out %>%
@@ -532,7 +552,7 @@ Sev.power <- ggplot(severity_by_power, aes(x = powerc, y = Claim_sev)) +
     # Define the mapping dataset for Belgium provinces
     province_mapping <- data.frame(INS = c("1","21","23", "25", "3", "4", "5", "6", "7", "8", "9"),
                                    Province = c("Antwerp", "Brussels Capital Region", "Flemish Brabant", "Walloon Brabant", "West Flanders",
-                                                "East fFlanders", "Hainaut", "Liège",
+                                                "East fFlanders", "Hainaut", "Liï¿½ge",
                                                 "Limburg", "Luxembourg", "Namur"))
     
     # Merge the mapping dataset with INS_freq based on the INS column
@@ -595,3 +615,4 @@ print(correlation_table)
 
 
   
+
