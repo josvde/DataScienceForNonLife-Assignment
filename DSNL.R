@@ -238,7 +238,7 @@ Freq.power <- ggplot(frequency_by_power, aes(x = powerc, y = avg_freq)) +
     # Define the mapping dataset for Belgium provinces
     province_mapping <- data.frame(INS = c("1","21","23", "25", "3", "4", "5", "6", "7", "8", "9"),
                                  Province = c("Antwerp", "Brussels Capital Region", "Flemish Brabant", "Walloon Brabant", "West Flanders",
-                                              "East flanders", "Hainaut", "Liège",
+                                              "East Flanders", "Hainaut", "Liège",
                                               "Limburg", "Luxembourg", "Namur"))
   
     # Merge the mapping dataset with INS_freq based on the INS column
@@ -501,7 +501,7 @@ Sev.power <- ggplot(severity_by_power, aes(x = powerc, y = Claim_sev)) +
     # Define the mapping dataset for Belgium provinces
     province_mapping <- data.frame(INS = c("1","21","23", "25", "3", "4", "5", "6", "7", "8", "9"),
                                    Province = c("Antwerp", "Brussels Capital Region", "Flemish Brabant", "Walloon Brabant", "West Flanders",
-                                                "East flanders", "Hainaut", "Liège",
+                                                "East fFlanders", "Hainaut", "Liège",
                                                 "Limburg", "Luxembourg", "Namur"))
     
     # Merge the mapping dataset with INS_freq based on the INS column
