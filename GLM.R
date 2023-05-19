@@ -54,7 +54,10 @@ rm(a)
 ## 1. Poisson Regression to build frequency table for technical tariff plan####
 
 # 1.1. Exposure to risk ####
-# exposure to risk = average claim cost per policy / average policy duration
+
+# Explanation
+  # exposure to risk = average claim cost per policy / average policy duration
+  # = average yearly claim cost that a policy holder with that specific characteristic will have
 
 # Exposure to risk by age policy holder
 
@@ -62,7 +65,7 @@ ETR_AGEPH <- Data %>%
   group_by(AGEPH) %>%
   summarise(ETR = mean(chargtot)/mean(duree))
 
-# conclusion: set age group 17-36 as reference level
+  # conclusion: set age group 17-36 as reference level
 
 # Exposure to risk by car age
 
@@ -70,7 +73,7 @@ ETR_agecar <- Data %>%
   group_by(agecar) %>%
   summarise(ETR = mean(chargtot)/mean(duree))
 
-# conclusion: set age group "0-1" as reference level
+  # conclusion: set age group "0-1" as reference level
 
 # Exposure to risk by sex policyholder
 
@@ -78,7 +81,7 @@ ETR_sexp <- Data %>%
   group_by(sexp) %>%
   summarise(ETR = mean(chargtot)/mean(duree))
 
-# conclusion: set female as reference level
+  # conclusion: set female as reference level
 
 # Exposure to risk by fuelc
 
@@ -86,7 +89,7 @@ ETR_fuelc <- Data %>%
   group_by(fuelc) %>%
   summarise(ETR = mean(chargtot)/mean(duree))
 
-# conclusion: set gasoil as reference level
+  # conclusion: set gasoil as reference level
 
 # Exposure to risk by splits
 
@@ -94,7 +97,7 @@ ETR_split <- Data %>%
   group_by(split) %>%
   summarise(ETR = mean(chargtot)/mean(duree))
 
-# conclusion: set monthly as reference level
+  # conclusion: set monthly as reference level
 
 # Exposure to risk by usec
 
@@ -102,7 +105,7 @@ ETR_usec <- Data %>%
   group_by(usec) %>%
   summarise(ETR = mean(chargtot)/mean(duree))
 
-# conclusion: set private as reference level
+  # conclusion: set private as reference level
 
 # Exposure to risk by fleetc
 
@@ -110,7 +113,7 @@ ETR_fleetc <- Data %>%
   group_by(fleetc) %>%
   summarise(ETR = mean(chargtot)/mean(duree))
 
-# conclusion: set "No" as reference level
+  # conclusion: set "No" as reference level
 
 # Exposure to risk by sportc
 
@@ -118,7 +121,7 @@ ETR_sportc <- Data %>%
   group_by(sportc) %>%
   summarise(ETR = mean(chargtot)/mean(duree))
 
-# conclusion: set "Yes" as reference level
+  # conclusion: set "Yes" as reference level
 
 # Exposure to risk by coverp
 
@@ -126,7 +129,7 @@ ETR_coverp <- Data %>%
   group_by(coverp) %>%
   summarise(ETR = mean(chargtot)/mean(duree))
 
-# conclusion: set MTPL as reference level
+  # conclusion: set MTPL as reference level
 
 # Exposure to risk by powerc
 
@@ -134,7 +137,7 @@ ETR_powerc <- Data %>%
   group_by(powerc) %>%
   summarise(ETR = mean(chargtot)/mean(duree))
 
-# conclusion: set >110 as reference level
+  # conclusion: set >110 as reference level
 
 # Exposure to risk by INS (province)
 
@@ -142,7 +145,7 @@ ETR_INS <- Data %>%
   group_by(INS) %>%
   summarise(ETR = mean(chargtot)/mean(duree))
 
-# conclusion: set West Flanders as reference level
+  # conclusion: set West Flanders as reference level
 
 # 1.2. construction of data frame ####
 
@@ -162,7 +165,7 @@ Data$coverp <- factor(Data$coverp, levels=c("MTPL","MTPL+","MTPL+++"))
 Data$powerc <- factor(Data$powerc, levels=c(">110","<66","66-110"))
 Data$INS <- factor(Data$INS,levels=c("West Flanders","Antwerp","Brabant & BXL","East Flanders","Hainaut","Liege","Limburg","Luxembourg","Namur"))
 
-# 1.3. Resulting GLM & tariff table ####
+# 1.3. Poisson GLMs & expected frequency tables ####
 
 GLMPois1Full <- glm(nbrtotc~AGEPH+agecar+sexp+fuelc+split+usec+fleetc+sportc+coverp+powerc+INS,offset=log(duree),data= Data, family=poisson(link="log"))
 
@@ -261,14 +264,17 @@ GLMPois3Dscrtv <- glm(nbrtotc~AGEPH+agecar+fuelc+fleetc+sportc+coverp+powerc+INS
 #   INSLuxembourg    -0.121341   0.056349  -2.153  0.031287 *  
 #   INSNamur          0.009628   0.040053   0.240  0.810030 
 
-## TO DO section GLM
+# dataframes with the expected frequency numbers for reference group based on different GLMs and correction values for other factor levels
 
-# create dataframe with frequency numbers
-  # should contain a string column with names for each correction
-  # store coefficients from GLM object and take exponent
-  # make 3 seperate frequency dataframes based on GLMPois1, GLMPois2 & GLMPois3Dscrtv
+TARFR1 <- data.frame(Name=names(coefficients(GLMPois1Full)),E_Freq=exp(coefficients(GLMPois1Full)))
+TARFR2 <- data.frame(Name=names(coefficients(GLMPois2)),E_Freq=exp(coefficients(GLMPois2)))
+TARFR3 <- data.frame(Name=names(coefficients(GLMPois3Dscrtv)),E_Freq=exp(coefficients(GLMPois3Dscrtv)))
 
-# Post dataframes in word doc
+
+# 1.4. Gamma GLMs & expected severity tables ####
+# 1.5. Model selection (based on AIC, BIC, Fisher iterations,...)
+
+## TO DO section GLM ####
 
 # Gamma regression for severity
 
