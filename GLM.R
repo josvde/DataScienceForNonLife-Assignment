@@ -147,11 +147,12 @@ ETR_INS <- Data %>%
 
   # conclusion: set West Flanders as reference level
 
-# 1.2. construction of data frame ####
+# 1.2. construction of the main dataframe ####
 
-# conversions of all covariates to factor variables, with the reference level as first level.
-# summary of reference level: age group 17-36, car age 0-1, female, gasoil, monthly payments, private car,...
-# No to fleet car, Yes to sportcar, policy type MTPL, power of car >110 and finally West Flanders.
+# in this section we will program the conversion of all covariates to factor variables...
+# with the before mentioned reference level as first level.
+# Summary of reference level values: age group 17-36, car age 0-1, female, gasoil, monthly payments, private car,...
+# no to fleet car, yes to sportcar, policy type MTPL, power of car >110 and finally West Flanders.
 
 Data$AGEPH <- factor(Data$AGEPH, levels=c("17-36","37-56","57-76",">76"))
 Data$agecar <- factor(Data$agecar, levels=c("0-1","2-5","6-10",">10"))
@@ -169,7 +170,7 @@ Data$INS <- factor(Data$INS,levels=c("West Flanders","Antwerp","Brabant & BXL","
 
 GLMPois1Full <- glm(nbrtotc~AGEPH+agecar+sexp+fuelc+split+usec+fleetc+sportc+coverp+powerc+INS,offset=log(duree),data= Data, family=poisson(link="log"))
 
-# Output GLMPoisFull
+# Output GLMPois1Full
 # Coefficients:
 #                     Estimate   Std.Er  z value Pr(>|z|)    
 #   (Intercept)      -0.88697    0.09588  -9.251  < 2e-16 ***
@@ -264,7 +265,7 @@ GLMPois3Dscrtv <- glm(nbrtotc~AGEPH+agecar+fuelc+fleetc+sportc+coverp+powerc+INS
 #   INSLuxembourg    -0.121341   0.056349  -2.153  0.031287 *  
 #   INSNamur          0.009628   0.040053   0.240  0.810030 
 
-# dataframes with the expected frequency numbers for reference group based on different GLMs and correction values for other factor levels
+# dataframes with the expected frequency numbers for reference group based on different GLMs and the correction values for other factor levels
 
 TARFR1 <- data.frame(Name=names(coefficients(GLMPois1Full)),E_Freq=exp(coefficients(GLMPois1Full)))
 TARFR2 <- data.frame(Name=names(coefficients(GLMPois2)),E_Freq=exp(coefficients(GLMPois2)))
@@ -272,65 +273,25 @@ TARFR3 <- data.frame(Name=names(coefficients(GLMPois3Dscrtv)),E_Freq=exp(coeffic
 
 
 # 1.4. Gamma GLMs & expected severity tables ####
-# 1.5. Model selection (based on AIC, BIC, Fisher iterations,...)
-
-## TO DO section GLM ####
-
 # Gamma regression for severity
+
+# 1.5. Model selection (based on AIC, BIC, Fisher Scoring iterations,...) ####
 
 # research about the quality of all proposed GLM models...
 # and make a choice of one model to be used for tariff calculations
 
-# code final technical tariff based on different risk profiles
+# consider using R-squared and Chi-Squared values to evaluate model quality
+# also look at null deviance and residual deviance
+# remaining values to be looked at are: AIC, BIC, Fisher Scoring iterations,...
 
+# 1.6. Technical premium for each risk profile based on GLMs ####
 
-## TO DO final section on risk loading
+# We will use model X, and thus frequency table TARFRX and severity table TARSVX to calculate the premium.
+# The expected frequency and expected severity values are obtained by multiplying the reference group values with...
+# all correction-values based on the characteristics specified in the risk profile.
 
-# calculate variance of premium for each risk profile
-  # use correct formula for Gamma Variance (look at parametrization)
-  # use correct formula for variance of the product of 2 rv's
+# JF calculated the final frequency value already in a Word table. Check if R reports the same value!
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# 2. Extra ####
+# Investigate what would be relevant and appropriate interaction terms of 2 or more covariates
+# Do this for the Poisson GLM as well as the Gamma GLM.
