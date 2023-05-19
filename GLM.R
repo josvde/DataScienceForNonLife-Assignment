@@ -162,7 +162,7 @@ Data$coverp <- factor(Data$coverp, levels=c("MTPL","MTPL+","MTPL+++"))
 Data$powerc <- factor(Data$powerc, levels=c(">110","<66","66-110"))
 Data$INS <- factor(Data$INS,levels=c("West Flanders","Antwerp","Brabant & BXL","East Flanders","Hainaut","Liege","Limburg","Luxembourg","Namur"))
 
-# 1.3. Resulting GLM & tariff table
+# 1.3. Resulting GLM & tariff table ####
 
 GLMPois1Full <- glm(nbrtotc~AGEPH+agecar+sexp+fuelc+split+usec+fleetc+sportc+coverp+powerc+INS,offset=log(duree),data= Data, family=poisson(link="log"))
 
@@ -230,4 +230,101 @@ GLMPois2 <- glm(nbrtotc~AGEPH+agecar+sexp+fuelc+split+fleetc+coverp+powerc+INS,o
 #   INSLimburg       -0.04076    0.04020  -1.014  0.310617    
 #   INSLuxembourg    -0.21852    0.05663  -3.858  0.000114 ***
 #   INSNamur         -0.09657    0.04052  -2.383  0.017172 * 
+
+# create GLM3PoisDscrtv based on a selection of covariates based on the descriptive analysis (see section 2.5)
+
+GLMPois3Dscrtv <- glm(nbrtotc~AGEPH+agecar+fuelc+fleetc+sportc+coverp+powerc+INS,offset=log(duree),data= Data, family=poisson(link="log"))
+
+# Output GLMPois3Dscrtv
+# Coefficients:
+#                    Estimate    Std. Error z value Pr(>|z|)    
+#   (Intercept)      -1.168133   0.092175  -12.673  < 2e-16 ***
+#   AGEPH37-56       -0.320574   0.015945  -20.106  < 2e-16 ***
+#   AGEPH57-76       -0.574470   0.020118  -28.556  < 2e-16 ***
+#   AGEPH>76         -0.455401   0.051771  -8.796   < 2e-16 ***
+#   agecar2-5        -0.253180   0.032948  -7.684  1.54e-14 ***
+#   agecar6-10       -0.193536   0.033616  -5.757  8.55e-09 ***
+#   agecar>10        -0.152046   0.035725  -4.256  2.08e-05 ***
+#   fuelcPetrol      -0.175291   0.015246  -11.498  < 2e-16 ***
+#   fleetcYes        -0.147814   0.043054  -3.433  0.000596 ***
+#   sportcNo         -0.090198   0.070534  -1.279  0.200975    
+#   coverpMTPL+      -0.129427   0.017635  -7.339  2.15e-13 ***
+#   coverpMTPL+++    -0.126873   0.024512  -5.176  2.27e-07 ***
+#   powerc<66        -0.229338   0.070373  -3.259  0.001118 ** 
+#   powerc66-110     -0.147023   0.070427  -2.088  0.036834 *  
+#   INSAntwerp        0.082053   0.031062   2.642  0.008253 ** 
+#   INSBrabant & BXL  0.346496   0.027849  12.442   < 2e-16 ***
+#   INSEast Flanders  0.123843   0.031192   3.970  7.18e-05 ***
+#   INSHainaut        0.103185   0.027797   3.712  0.000206 ***
+#   INSLiege          0.191432   0.030527   6.271  3.59e-10 ***
+#   INSLimburg       -0.000784   0.040107  -0.020  0.984403    
+#   INSLuxembourg    -0.121341   0.056349  -2.153  0.031287 *  
+#   INSNamur          0.009628   0.040053   0.240  0.810030 
+
+## TO DO section GLM
+
+# create dataframe with frequency numbers
+  # should contain a string column with names for each correction
+  # store coefficients from GLM object and take exponent
+  # make 3 seperate frequency dataframes based on GLMPois1, GLMPois2 & GLMPois3Dscrtv
+
+# Post dataframes in word doc
+
+# Gamma regression for severity
+
+# research about the quality of all proposed GLM models...
+# and make a choice of one model to be used for tariff calculations
+
+# code final technical tariff based on different risk profiles
+
+
+## TO DO final section on risk loading
+
+# calculate variance of premium for each risk profile
+  # use correct formula for Gamma Variance (look at parametrization)
+  # use correct formula for variance of the product of 2 rv's
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
