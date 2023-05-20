@@ -579,6 +579,8 @@ grid.arrange(Sev.age, nrow = 1)
 grid.arrange(Sev.agecar, Sev.sex, Sev.fuel, Sev.split, Sev.use, Sev.fleet, Sev.sportc, Sev.cover, Sev.power, nrow = 3)
 grid.arrange(Sev.location, nrow = 1) 
 
+# [JFVC] proposed new combination of graphs
+
 
 ############ Section 2.3 Correlation matrix ############ 
 
@@ -622,7 +624,3 @@ print(correlation_table)
 
 
 
-  
-
-
-  
