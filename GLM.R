@@ -16,6 +16,7 @@ library(tidyverse) # for data manipulation
 library(sf) # for spatial data manipulation
 library(tmap) # for creating maps
 library(gridExtra)
+library(car)
 
 ## 0. Loading and manipulating data ####
 dir <- dirname(rstudioapi::getActiveDocumentContext()$path)
@@ -24,8 +25,14 @@ rm(dir)
 
 Data <- as.data.table(read.csv("DataCombined.csv", header=TRUE, sep=";", dec="."))
 
+
 # make a quick selection for relevant covariates
 Data <- select(Data, AGEPH,duree,nbrtotc,chargtot,agecar,sexp,fuelc,split,usec,fleetc,sportc,coverp,powerc,INS)
+
+# load dataset with no outliers
+DataCleaned <- Data[which(Data$chargtot  > 0),]
+Tmax2=142112
+Data_no_out <- DataCleaned[which(DataCleaned$chargtot < Tmax2),]
 
 # make AGEPH variable into groups
 a<-Data$AGEPH
@@ -169,8 +176,9 @@ Data$INS <- factor(Data$INS,levels=c("West Flanders","Antwerp","Brabant & BXL","
 # 1.3. Poisson GLMs & expected frequency tables ####
 
 GLMPois1Full <- glm(nbrtotc~AGEPH+agecar+sexp+fuelc+split+usec+fleetc+sportc+coverp+powerc+INS,offset=log(duree),data= Data, family=poisson(link="log"))
+summary(GLMPois1Full)
 
-# Output GLMPois1Full
+# Output GLMPois1Full 
 # Coefficients:
 #                     Estimate   Std.Er  z value Pr(>|z|)    
 #   (Intercept)      -0.88697    0.09588  -9.251  < 2e-16 ***
@@ -205,6 +213,8 @@ GLMPois1Full <- glm(nbrtotc~AGEPH+agecar+sexp+fuelc+split+usec+fleetc+sportc+cov
 # as they have no significant impact on the response variable
 
 GLMPois2 <- glm(nbrtotc~AGEPH+agecar+sexp+fuelc+split+fleetc+coverp+powerc+INS,offset=log(duree),data= Data, family=poisson(link="log"))
+summary(GLMPois2)
+
 
 # Output GLMPois2
 # Coefficients:
@@ -237,7 +247,7 @@ GLMPois2 <- glm(nbrtotc~AGEPH+agecar+sexp+fuelc+split+fleetc+coverp+powerc+INS,o
 
 # create GLM3PoisDscrtv based on a selection of covariates based on the descriptive analysis (see section 2.5)
 
-GLMPois3Dscrtv <- glm(nbrtotc~AGEPH+agecar+fuelc+fleetc+sportc+coverp+powerc+INS,offset=log(duree),data= Data, family=poisson(link="log"))
+GLM3PoisDscrtv <- glm(nbrtotc~AGEPH+agecar+fuelc+split+fleetc+coverp+powerc+INS,offset=log(duree),data= Data, family=poisson(link="log"))
 
 # Output GLMPois3Dscrtv
 # Coefficients:
@@ -265,30 +275,224 @@ GLMPois3Dscrtv <- glm(nbrtotc~AGEPH+agecar+fuelc+fleetc+sportc+coverp+powerc+INS
 #   INSLuxembourg    -0.121341   0.056349  -2.153  0.031287 *  
 #   INSNamur          0.009628   0.040053   0.240  0.810030 
 
+# create GLM3PoisDscrtv2 where we only leave out sexp compared to GLM2
+
+GLMPois3  <- glm(nbrtotc~AGEPH+agecar+fuelc+split+fleetc+sportc+coverp+powerc+INS,offset=log(duree),data= Data, family=poisson(link="log"))
+
+summary(GLMPois3)
+
+# Output GLMPois3Dscrtv
+# Coefficients:
+# Coefficients:
+
+# Coefficients:
+# Estimate Std. Error z value Pr(>|z|)    
+# (Intercept)      -0.92408    0.09465  -9.764  < 2e-16 ***
+#  AGEPH37-56       -0.28901    0.01607 -17.982  < 2e-16 ***
+#  AGEPH57-76       -0.49167    0.02058 -23.886  < 2e-16 ***
+# AGEPH>76         -0.32317    0.05223  -6.188 6.11e-10 ***
+# agecar2-5        -0.25048    0.03294  -7.603 2.89e-14 ***
+# agecar6-10       -0.19397    0.03362  -5.770 7.92e-09 ***
+# agecar>10        -0.17652    0.03577  -4.935 8.01e-07 ***
+# fuelcPetrol      -0.17545    0.01525 -11.504  < 2e-16 ***
+# splitThrice       0.09250    0.02895   3.196 0.001394 ** 
+# splitTwice       -0.13370    0.02319  -5.766 8.13e-09 ***
+# splitOnce        -0.33079    0.02187 -15.128  < 2e-16 ***
+# fleetcYes        -0.10084    0.04323  -2.333 0.019667 *  
+# sportcNo         -0.08866    0.07058  -1.256 0.209063    
+# coverpMTPL+      -0.13789    0.01767  -7.806 5.92e-15 ***
+# coverpMTPL+++    -0.15856    0.02472  -6.415 1.41e-10 ***
+# powerc<66        -0.24287    0.07037  -3.451 0.000558 ***
+# powerc66-110     -0.16264    0.07042  -2.310 0.020907 *  
+# INSAntwerp        0.03698    0.03128   1.182 0.237107    
+# INSBrabant & BXL  0.25876    0.02832   9.138  < 2e-16 ***
+# INSEast Flanders  0.11078    0.03121   3.549 0.000386 ***
+# INSHainaut        0.01073    0.02839   0.378 0.705411    
+# INSLiege          0.08663    0.03108   2.787 0.005313 ** 
+# INSLimburg       -0.04103    0.04021  -1.021 0.307445    
+# INSLuxembourg    -0.21773    0.05663  -3.844 0.000121 ***
+# INSNamur         -0.09645    0.04053  -2.380 0.017317 *   
+
 # dataframes with the expected frequency numbers for reference group based on different GLMs and the correction values for other factor levels
 
 TARFR1 <- data.frame(Name=names(coefficients(GLMPois1Full)),E_Freq=exp(coefficients(GLMPois1Full)))
 TARFR2 <- data.frame(Name=names(coefficients(GLMPois2)),E_Freq=exp(coefficients(GLMPois2)))
 TARFR3 <- data.frame(Name=names(coefficients(GLMPois3Dscrtv)),E_Freq=exp(coefficients(GLMPois3Dscrtv)))
+TARFR4 <- data.frame(Name=names(coefficients(GLMPois3Dscrtv2)),E_Freq=exp(coefficients(GLMPois3Dscrtv2)))
+
+# 1.4. Poisson GLMs & expected frequency tables [one dummy gamma uploading for testing model selection and risk loading####
+
+GLMGamma1Full <- glm(chargtot ~ AGEPH + agecar + sexp + fuelc + split + usec + fleetc + sportc + coverp + powerc + INS, offset = log(duree), data = Data_no_out, family = Gamma(link = "log"))
+summary(GLMPois1Full)
 
 
-# 1.4. Gamma GLMs & expected severity tables ####
+# 1.5. Gamma GLMs & expected severity tables ####
 # Gamma regression for severity
 
-# 1.5. Model selection (based on AIC, BIC, Fisher Scoring iterations,...) ####
+# 1.6. Model selection ####
 
-# research about the quality of all proposed GLM models...
-# and make a choice of one model to be used for tariff calculations
+# 1.6.1 Poisson ####
 
-# consider using R-squared and Chi-Squared values to evaluate model quality
-# also look at null deviance and residual deviance
-# remaining values to be looked at are: AIC, BIC, Fisher Scoring iterations,...
+# AIC/BIC
 
-# 1.6. Technical premium for each risk profile based on GLMs ####
+      # Calculate AIC
+      AIC_GLMPois1Full <- AIC(GLMPois1Full)
+      AIC_GLMPois2 <- AIC(GLMPois2)
+      AIC_GLMPois3Dscrtv <- AIC(GLMPois3Dscrtv)
+      AIC_GLMPois3 <- AIC(GLMPois3)
+      
+      # Calculate BIC
+      BIC_GLMPois1Full <- BIC(GLMPois1Full)
+      BIC_GLMPois2 <- BIC(GLMPois2)
+      BIC_GLMPois3Dscrtv <- BIC(GLMPois3Dscrtv)
+      BIC_GLMPois3 <- BIC(GLMPois3)
+      
+          
+      # Print the AIC and BIC values
+      cat("AIC for GLMPois1Full:", AIC_GLMPois1Full, "\n")
+      cat("AIC for GLMPois2:", AIC_GLMPois2, "\n")
+      cat("AIC for GLMPois3Dscrtv:", AIC_GLMPois3Dscrtv, "\n")
+      cat("AIC for GLMPois3:", AIC_GLMGLMPois3, "\n")
+      
+      cat("BIC for GLMPois1Full:", BIC_GLMPois1Full, "\n")
+      cat("BIC for GLMPois2:", BIC_GLMPois2, "\n")
+      cat("BIC for GLMPois3Dscrtv:", BIC_GLMPois3Dscrtv, "\n")
+      cat("BIC for GLMPois3:", BIC_GLMGLMPois3, "\n")
+      
+  # Deviance
+  
+    # GLMPois1Full
+      deviance(GLMPois1Full)
+    # GLMPois2
+      deviance(GLMPois2)
+    # GLMPois3Dscrtv
+      deviance(GLMPois3Dscrtv)
+    # GLMPois3Dscrtv2
+      deviance(GLMPois3)
+      
+  # Drop in deviance
+  
+   # A first general look at the drop in deviance by starting from the model with only an intercept and than adding the covariates one by one. 
+    # gives us a first indication of if the factor variable matter or not     
+    anova(GLMPois1Full,test="Chisq")
+      
+    # Drop-in-deviance test between GLMPois1Full and GLMPois2 model.
+      GLMPois2$deviance - GLMPois1Full$deviance
+  
+      pchisq(GLMPois2$deviance - GLMPois1Full$deviance, df = df.residual(GLMPois2)-df.residual(GLMPois1Full) , lower = F) #0.310899 Not significant 
+      
+      # Drop-in-deviance test between GLMPois1Full and GLMPois3Dscrtv model.
+      GLMPois3Dscrtv$deviance - GLMPois1Full$deviance
+      
+      pchisq(GLMPois3Dscrtv$deviance - GLMPois1Full$deviance, df = df.residual(GLMPois3Dscrtv)-df.residual(GLMPois1Full), lower = F) #1.709847e-89 Significant on the 95% CI -> Thus going from current model to full improves the fit significantly 
+  
+      # Drop-in-deviance test between GLMPois1Full and GLMPois3 model.
+      GLMPois3$deviance - GLMPois1Full$deviance
+      
+      pchisq(GLMPois3$deviance - GLMPois1Full$deviance, df = df.residual(GLMPois3)-df.residual(GLMPois1Full), lower = F) #0.01742042 Not Significant on the 99% CI, but significant on the 95% CI 
+
+# 1.7. Technical premium for each risk profile based on GLMs ####
 
 # We will use model X, and thus frequency table TARFRX and severity table TARSVX to calculate the premium.
-# The expected frequency and expected severity values are obtained by multiplying the reference group values with...
-# all correction-values based on the characteristics specified in the risk profile.
+      
+  # Lambda (Poisson)
+      # Calculate the variance-covariance matrix
+      variance_matrix <- vcov(GLMPois3)
+      
+      # Extract the variances of the coefficients
+      Lambda <- diag(variance_matrix)
+      
+      # Low risk 
+      Lambda_low <- sum(Lambda[c("(Intercept)", "AGEPH57-76", "fuelcPetrol","splitOnce","fleetcYes","fleetcYes","coverpMTPL+++","powerc<66","INSLuxembourg")])
+      beta_low
+      # Medium risk
+      Lambda_medium <- sum(Lambda[c("(Intercept)", "AGEPH37-56", "agecar>10", "fuelcPetrol","fleetcYes","coverpMTPL+","powerc66-110","INSAntwerp")])
+      Lambda_medium   
+      # High risk
+      Lambda_high <- sum(Lambda[c("(Intercept)", "splitThrice", "INSBrabant & BXL")])
+      Lambda_high
+    
+      
+    # Alpha and Beta (Gamma) (To be updated once we have our GammaGLM) TBC
+      
+      #We calculate first the mean and variance of the gamma
+        Variance_matrix_gamma <- vcov(GLMGamma1Full)
+        Variance_gamma <- diag(Variance_matrix_gamma)
+        coef_summary <- summary(GLMPois1Full)$coefficients
+        Mean_gamma <- coef_summary[, "Estimate"]
+        
+        alpha <- (Mean_gamma / Variance_gamma)^2
+        beta <- Mean_gamma / Variance_gamma
+      #alpha
+        # Low risk 
+        alpha_low <- sum(alpha[c("(Intercept)", "AGEPH57-76", "fuelcPetrol","splitOnce","fleetcYes","fleetcYes","coverpMTPL+++","powerc<66","INSLuxembourg")])
+        alpha_low
+        # Medium risk
+        alpha_medium <- sum(alpha[c("(Intercept)", "AGEPH37-56", "agecar>10", "fuelcPetrol","fleetcYes","coverpMTPL+","powerc66-110","INSAntwerp")])
+        alpha_medium   
+        # High risk
+        alpha_high <- sum(alpha[c("(Intercept)", "splitThrice", "INSBrabant & BXL")])
+        alpha_high
+        
+      #beta
+        # Low risk 
+        beta_low <- sum(beta[c("(Intercept)", "AGEPH57-76", "fuelcPetrol","splitOnce","fleetcYes","fleetcYes","coverpMTPL+++","powerc<66","INSLuxembourg")])
+        beta_low
+        # Medium risk
+        beta_medium <- sum(beta[c("(Intercept)", "AGEPH37-56", "agecar>10", "fuelcPetrol","fleetcYes","coverpMTPL+","powerc66-110","INSAntwerp")])
+        beta_medium   
+        # High risk
+        beta_high <- sum(beta[c("(Intercept)", "splitThrice", "INSBrabant & BXL")])
+        beta_high
+        
+# Mean and variance loss function
+        
+  # Low risk
+    Mean_L_low <- Lambda_low*(alpha_low/beta_low)
+    Mean_L_low
+    Variance_L_low <- Lambda_low*(alpha_low/(beta_low^2))+Lambda_low*(alpha_low/beta_low)^2+(alpha_low/(beta_low^2))*Lambda_low^2
+    Variance_L_low
+    # Medium risk
+    Mean_L_medium <- Lambda_medium*(alpha_medium/beta_medium)
+    Mean_L_medium
+    Variance_L_medium <- Lambda_medium*(alpha_medium/(beta_medium^2))+Lambda_medium*(alpha_medium/beta_medium)^2+(alpha_medium/(beta_medium^2))*Lambda_medium^2
+    Variance_L_medium
+    # high risk
+    Mean_L_high <- Lambda_high*(alpha_high/beta_high)
+    Mean_L_high
+    Variance_L_high <- Lambda_high*(alpha_high/(beta_high^2))+Lambda_high*(alpha_high/beta_high)^2+(alpha_high/(beta_high^2))*Lambda_high^2
+    Variance_L_high
+
+# Risk loaded premium
+    
+    # Expected Value Principle
+      #low
+      (1+0.01)*Mean_L_low
+      #medium
+      (1+0.01)*Mean_L_medium
+      #high
+      (1+0.01)*Mean_L_high
+    # Variance Principle
+      #low
+      Mean_L_low+1.5*(Variance_L_low)
+      #medium
+      Mean_L_medium+1.5*(Variance_L_medium)
+      #high
+      Mean_L_high+1.5*(Variance_L_high)
+    # Standard Deviation Principle
+      #low
+      Mean_L_low+3*sqrt(Variance_L_low)
+      #medium
+      Mean_L_medium+3*sqrt(Variance_L_medium)
+      #high
+      Mean_L_high+3*sqrt(Variance_L_high)
+    # Compromise principle
+      #low
+      Mean_L_low+0.75*sqrt(Variance_L_low)+1.5*(Variance_L_low)
+      #medium
+      Mean_L_medium+0.75*sqrt(Variance_L_medium)+1.5*(Variance_L_medium)
+      #high
+      Mean_L_high+0.75*sqrt(Variance_L_high)+1.5*(Variance_L_high)
 
 # JF calculated the final frequency value already in a Word table. Check if R reports the same value!
 
