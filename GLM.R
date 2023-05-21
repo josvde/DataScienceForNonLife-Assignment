@@ -322,6 +322,7 @@ TARFR4 <- data.frame(Name=names(coefficients(GLMPois3)),E_Freq=exp(coefficients(
 # 1.3.2 Poisson GLMs with interaction terms ####
 
 # important!":" and "*" yield different results!
+
 a<-names(Data)
 a<-a[!a %in% c("duree","nbrtotc","chargtot")]
 
@@ -372,6 +373,15 @@ summary(GLMPois1Full)
 
 # 1.5. Gamma GLMs & expected severity tables ####
 # Gamma regression for severity
+
+GLMGamma1Full <- glm(chargtot ~ AGEPH + agecar + sexp + fuelc + split + usec + fleetc + sportc + coverp + powerc + INS, offset = log(duree), data = Data_no_out, family = Gamma(link = "log"))
+summary(GLMGamma1Full)
+
+GLMGamma3Dscrtv <- glm(chargtot~AGEPH+agecar+fuelc+fleetc+coverp+powerc+INS,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
+summary(GLMGamma3Dscrtv)
+
+GLMGamma2 <- glm(chargtot~AGEPH+agecar+sexp+fuelc+split+fleetc+coverp+powerc+INS,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
+summary(GLMGamma2)
 
 # 1.6. Model selection ####
 
@@ -433,9 +443,9 @@ summary(GLMPois1Full)
       # Drop-in-deviance test between GLMPois1Full and GLMPois3 model.
       GLMPois3$deviance - GLMPois1Full$deviance
       
-      pchisq(GLMPois3$deviance - GLMPois1Full$deviance, df = df.residual(GLMPois3)-df.residual(GLMPois1Full), lower = F) #0.02186997 Not Significant on the 99% CI, but significant on the 95% CI 
+      pchisq(GLMPois3$deviance - GLMPois1Full$deviance, df = df.residual(GLMPois3)-df.residual(GLMPois1Full), lower = F) #0.02186997 Not Significant on the 99% CI, but significant on the 95% CI
+
      
-      
       # Drop-in-deviance test between GLMPois1Full and GLMPois3 model.
       GLMPois3$deviance - GLMPois2$deviance
       
@@ -443,7 +453,11 @@ summary(GLMPois1Full)
       
       
       # we accepted GLMPois2 and rejected GLMPois1 (by the first chi-sq test)
-      # Be residual deviance between GLMPois1 and GLMPois2 are negligible  
+      # The residual deviance between GLMPois1 and GLMPois2 are negligible 
+      
+      # Why almost accept model 3 when comparing to model 1, but reject model 3 when comparing to model 2? 
+      # we can explain this because the drop in degrees of freedom is higher from model 1 to model 3, this results in a higher q-parameter for the chi-sq test statistic..
+      #this difference is smaller when comparing model 3 to 2. There the same increase in deviance holds, but difference in degrees of freedom is smaller...
       
       
 # 1.7. Technical premium for each risk profile based on GLMs ####
