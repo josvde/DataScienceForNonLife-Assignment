@@ -390,7 +390,10 @@ summary(GLMPois1Full)
       GLMPois3$deviance - GLMPois1Full$deviance
       
       pchisq(GLMPois3$deviance - GLMPois1Full$deviance, df = df.residual(GLMPois3)-df.residual(GLMPois1Full), lower = F) #0.01742042 Not Significant on the 99% CI, but significant on the 95% CI 
-
+      
+      # we accepted GLMPois2 and rejected GLMPois1 (by the first chi-sq test), so it would be more logical to compare GLMPois2 with GLMPois3.
+      # Be residual deviance between GLMPois1 and GLMPois2 are negligible  
+      
 # 1.7. Technical premium for each risk profile based on GLMs ####
 
 # We will use model X, and thus frequency table TARFRX and severity table TARSVX to calculate the premium.
