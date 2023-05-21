@@ -336,8 +336,43 @@ anova(GLMPois1Full,GLMPoisIT1_3,test="LRT")
 
 # 1.4. Draft section: one dummy gamma uploading for testing model selection and risk loading####
 
-GLMGamma1Full <- glm(chargtot ~ AGEPH + agecar + sexp + fuelc + split + usec + fleetc + sportc + coverp + powerc + INS, offset = log(duree), data = Data_no_out, family = Gamma(link = "log"))
-summary(GLMPois1Full)
+# make AGEPH variable into groups
+a<-Data_no_out$AGEPH
+a[a>=17&a<37]="17-36"
+a[a>=37&a<57]="37-56"
+a[a>=57&a<77]="57-76"
+a[a>76]=">76"
+Data_no_out$AGEPH<-a
+rm(a)
+
+# replace INS value by province name
+a<-Data_no_out$INS
+a<- substr(a,1,1)
+a[a==1]="Antwerp"
+a[a==2]="Brabant & BXL"
+a[a==3]= "West Flanders"
+a[a==4]= "East Flanders"
+a[a==5]= "Hainaut"
+a[a==6]= "Liege"
+a[a==7]= "Limburg"
+a[a==8]= "Luxembourg"
+a[a==9]= "Namur"
+Data_no_out$INS<-a
+rm(a)
+
+
+Data_no_out$AGEPH <- factor(Data_no_out$AGEPH, levels=c("17-36","37-56","57-76",">76"))
+Data_no_out$agecar <- factor(Data_no_out$agecar, levels=c("0-1","2-5","6-10",">10"))
+Data_no_out$sexp <- factor(Data_no_out$sexp, levels=c("Female","Male"))
+Data_no_out$fuelc <- factor(Data_no_out$fuelc, levels=c("Gasoil","Petrol"))
+Data_no_out$split <- factor(Data_no_out$split, levels=c("Monthly","Thrice","Twice","Once"))
+Data_no_out$usec <- factor(Data_no_out$usec, levels=c("Private","Professional"))
+Data_no_out$fleetc <- factor(Data_no_out$fleetc, levels=c("No","Yes"))
+Data_no_out$sportc <- factor(Data_no_out$sportc, levels=c("Yes","No"))
+Data_no_out$coverp <- factor(Data_no_out$coverp, levels=c("MTPL","MTPL+","MTPL+++"))
+Data_no_out$powerc <- factor(Data_no_out$powerc, levels=c(">110","<66","66-110"))
+Data_no_out$INS <- factor(Data_no_out$INS,levels=c("West Flanders","Antwerp","Brabant & BXL","East Flanders","Hainaut","Liege","Limburg","Luxembourg","Namur"))
+
 
 
 # 1.5. Gamma GLMs & expected severity tables ####
@@ -346,11 +381,17 @@ summary(GLMPois1Full)
 GLMGamma1Full <- glm(chargtot ~ AGEPH + agecar + sexp + fuelc + split + usec + fleetc + sportc + coverp + powerc + INS, offset = log(duree), data = Data_no_out, family = Gamma(link = "log"))
 summary(GLMGamma1Full)
 
-GLMGamma3Dscrtv <- glm(chargtot~AGEPH+agecar+fuelc+fleetc+coverp+powerc+INS,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
-summary(GLMGamma3Dscrtv)
+GLMGamma3 <- glm(chargtot~AGEPH+agecar+fuelc+fleetc+coverp+powerc+INS,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
+summary(GLMGamma3)
 
 GLMGamma2 <- glm(chargtot~AGEPH+agecar+sexp+fuelc+split+fleetc+coverp+powerc+INS,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
 summary(GLMGamma2)
+
+GLMGamma4 <- glm(chargtot~AGEPH+coverp+INS,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
+summary(GLMGamma4)
+
+GLMGamma5 <- glm(chargtot~AGEPH+coverp,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
+summary(GLMGamma5)
 
 # 1.6. Model selection ####
 
@@ -417,6 +458,64 @@ summary(GLMGamma2)
       # Why almost accept model 3 when comparing to model 1, but reject model 3 when comparing to model 2? 
       # we can explain this because the drop in degrees of freedom is higher from model 1 to model 3, this results in a higher q-parameter for the chi-sq test statistic..
       #this difference is smaller when comparing model 3 to 2. There the same increase in deviance holds, but difference in degrees of freedom is smaller...
+ 
+      
+# 1.6.1 Poisson ####
+      
+  # AIC/BIC
+      
+     # Calculate AIC
+      AIC_GLMGAM1Full <- AIC(GLMGamma1Full)
+      AIC_GLMGAM2 <- AIC(GLMGamma2)
+      AIC_GLMGAM3 <- AIC(GLMGamma3)
+      
+      # Calculate BIC
+      BIC_GLMGAM1Full <- BIC(GLMPois1Full)
+      BIC_GLMGAM2 <- BIC(GLMGamma2)
+      BIC_GLMGAM3 <- BIC(GLMGamma3)
+      
+      
+      # Print the AIC and BIC values
+      cat("AIC for GLMGamma1Full:", AIC_GLMPois1Full, "\n")
+      cat("AIC for GLMGamma2:", AIC_GLMGAM2, "\n")
+      cat("AIC for GLMGamma3:", AIC_GLMGAM3, "\n")
+      
+      cat("BIC for GLMGamma1Full:", BIC_GLMPois1Full, "\n")
+      cat("BIC for GLMGamma2:", BIC_GLMGAM2, "\n")
+      cat("BIC for GLMGamma3:", BIC_GLMGAM3, "\n") 
+      
+  # Deviance
+      
+      # GLMPois1Full
+      deviance(GLMGamma1Full)
+      # GLMPois2
+      deviance(GLMGamma2)
+      
+      # GLMPois3Dscrtv2
+      deviance(GLMGamma3)
+      
+  # Drop in deviance
+      
+      # A first general look at the drop in deviance by starting from the model with only an intercept and than adding the covariates one by one. 
+      # gives us a first indication of if the factor variable matter or not     
+      anova(GLMGamma1Full,test="Chisq")
+      
+      # Drop-in-deviance test between GLMGamma1Full and GLMGamma2 model.
+      GLMGamma2$deviance - GLMGamma1Full$deviance
+      
+      pchisq(GLMGamma2$deviance - GLMGamma1Full$deviance, df = df.residual(GLMGamma2)-df.residual(GLMGamma1Full) , lower = F) #0.310899 Not significant 
+      
+      # Drop-in-deviance test between GLMGamma1Full and GLMGamma3 model.
+      GLMGamma3$deviance - GLMGamma1Full$deviance
+      
+      pchisq(GLMGamma3$deviance - GLMGamma1Full$deviance, df = df.residual(GLMGamma3)-df.residual(GLMGamma1Full), lower = F) #0.02186997 Not Significant on the 99% CI, but significant on the 95% CI
+      
+      
+      # Drop-in-deviance test between GLMGamma1Full and GLMGamma3 model.
+      GLMGamma3$deviance - GLMGamma2$deviance
+      
+      pchisq(GLMGamma3$deviance - GLMGamma2$deviance, df = df.residual(GLMGamma3)-df.residual(GLMGamma2), lower = F) #0.006875533 Significant
+      
       
       
 # 1.7. Technical premium for each risk profile based on GLMs ####
@@ -453,7 +552,7 @@ summary(GLMGamma2)
       
       #Variance
       
-      variance_covarianceGamma <- vcov(GLMPois3)
+      variance_covarianceGamma <- vcov(GLMGamma2)
       # Low risk
       variance_covariance_Gammalow <- variance_covarianceGamma[Low_risk, Low_risk]
       Variance_gamma_low <- sum(variance_covariance_Gammalow)
@@ -468,7 +567,7 @@ summary(GLMGamma2)
 
       # mean 
       
-      mean_Gamma <- coef(summary(GLMPois3))[, 1]
+      mean_Gamma <- coef(summary(GLMGamma2))[, 1]
       
       # Low risk
       Mean_Gammalow <- mean_Gamma[Low_risk]
