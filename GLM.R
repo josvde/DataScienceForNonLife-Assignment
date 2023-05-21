@@ -390,7 +390,10 @@ summary(GLMPois1Full)
       GLMPois3$deviance - GLMPois1Full$deviance
       
       pchisq(GLMPois3$deviance - GLMPois1Full$deviance, df = df.residual(GLMPois3)-df.residual(GLMPois1Full), lower = F) #0.01742042 Not Significant on the 99% CI, but significant on the 95% CI 
-
+      
+      # we accepted GLMPois2 and rejected GLMPois1 (by the first chi-sq test), so it would be more logical to compare GLMPois2 with GLMPois3.
+      # Be residual deviance between GLMPois1 and GLMPois2 are negligible  
+      
 # 1.7. Technical premium for each risk profile based on GLMs ####
 
 # We will use model X, and thus frequency table TARFRX and severity table TARSVX to calculate the premium.
@@ -412,6 +415,10 @@ summary(GLMPois1Full)
       Lambda_high <- sum(Lambda[c("(Intercept)", "splitThrice", "INSBrabant & BXL")])
       Lambda_high
     
+      # Note JVDE: I don't yet understand the method you used. The ease thing about the Poisson is that the variance is equal to the lambda.
+      # So we would just need to calculate lambda via the coefficient values.
+      # But calculating the lambda this way ofcourse doesn't takes into account that the Beta's also have variance of themselves.
+      # So in conclusion, we need the formula proposed in the word file to get the real variance of the lambda
       
     # Alpha and Beta (Gamma) (To be updated once we have our GammaGLM) TBC
       
@@ -423,7 +430,8 @@ summary(GLMPois1Full)
         
         alpha <- (Mean_gamma / Variance_gamma)^2
         beta <- Mean_gamma / Variance_gamma
-      #alpha
+      
+        #alpha
         # Low risk 
         alpha_low <- sum(alpha[c("(Intercept)", "AGEPH57-76", "fuelcPetrol","splitOnce","fleetcYes","fleetcYes","coverpMTPL+++","powerc<66","INSLuxembourg")])
         alpha_low
