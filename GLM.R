@@ -282,8 +282,7 @@ GLMPois3  <- glm(nbrtotc~AGEPH+agecar+fuelc+split+fleetc+sportc+coverp+powerc+IN
 
 summary(GLMPois3)
 
-# Output GLMPois3Dscrtv
-# Coefficients:
+# Output GLMPois3
 # Coefficients:
 
 # Coefficients:
@@ -321,7 +320,7 @@ TARFR2 <- data.frame(Name=names(coefficients(GLMPois2)),E_Freq=exp(coefficients(
 TARFR3 <- data.frame(Name=names(coefficients(GLMPois3Dscrtv)),E_Freq=exp(coefficients(GLMPois3Dscrtv)))
 TARFR4 <- data.frame(Name=names(coefficients(GLMPois3)),E_Freq=exp(coefficients(GLMPois3)))
 
-# 1.4. Poisson GLMs & expected frequency tables [one dummy gamma uploading for testing model selection and risk loading####
+# 1.4. Draft section: one dummy gamma uploading for testing model selection and risk loading####
 
 GLMGamma1Full <- glm(chargtot ~ AGEPH + agecar + sexp + fuelc + split + usec + fleetc + sportc + coverp + powerc + INS, offset = log(duree), data = Data_no_out, family = Gamma(link = "log"))
 summary(GLMPois1Full)
