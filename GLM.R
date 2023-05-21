@@ -175,6 +175,7 @@ Data$INS <- factor(Data$INS,levels=c("West Flanders","Antwerp","Brabant & BXL","
 
 # 1.3. Poisson GLMs & expected frequency tables ####
 
+# 1.3.1 Poisson GLMs with no interaction terms ####
 GLMPois1Full <- glm(nbrtotc~AGEPH+agecar+sexp+fuelc+split+usec+fleetc+sportc+coverp+powerc+INS,offset=log(duree),data= Data, family=poisson(link="log"))
 summary(GLMPois1Full)
 
@@ -319,6 +320,28 @@ TARFR1 <- data.frame(Name=names(coefficients(GLMPois1Full)),E_Freq=exp(coefficie
 TARFR2 <- data.frame(Name=names(coefficients(GLMPois2)),E_Freq=exp(coefficients(GLMPois2)))
 TARFR3 <- data.frame(Name=names(coefficients(GLMPois3Dscrtv)),E_Freq=exp(coefficients(GLMPois3Dscrtv)))
 TARFR4 <- data.frame(Name=names(coefficients(GLMPois3)),E_Freq=exp(coefficients(GLMPois3)))
+
+# 1.3.2 Poisson GLMs with interaction terms ####
+
+# important!":" and "*" yield different results!
+a<-names(Data)
+a<-a[!a %in% c("duree","nbrtotc","chargtot")]
+
+r <- "AGEPH:agecar"
+for(i in 1:length(a)){
+  for(j in i:length(a)){
+    if(!i==j) r<-paste(sep="",r,"+",a[i],":",a[j]) 
+  }
+  
+}
+
+cat(r)
+GLMPoisIT1 <- glm(nbrtotc~AGEPH:agecar+AGEPH:agecar+AGEPH:sexp+AGEPH:fuelc+AGEPH:split+AGEPH:usec+AGEPH:fleetc+AGEPH:sportc+AGEPH:coverp+AGEPH:powerc+AGEPH:INS,data= Data, family=poisson(link="log"))
+summary(GLMPoisIT1)
+
+GLMPoisIT1SUM<-coef(summary(GLMPoisIT1))
+anova(GLMPoisIT1,test="Chisq")
+
 
 # 1.4. Draft section: one dummy gamma uploading for testing model selection and risk loading####
 
