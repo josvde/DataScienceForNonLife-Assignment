@@ -556,8 +556,6 @@ summary(GLMGamma2)
       #high
       Mean_L_high+0.75*sqrt(Variance_L_high)+1.5*(Variance_L_high)
 
-# JF calculated the final frequency value already in a Word table. Check if R reports the same value!
-
 # 2. Extra ####
 # Investigate what would be relevant and appropriate interaction terms of 2 or more covariates
 # Do this for the Poisson GLM as well as the Gamma GLM.
