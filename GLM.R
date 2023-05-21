@@ -279,40 +279,38 @@ summary(GLMPois3Dscrtv)
 
 # create GLM3PoisDscrtv2 where we only leave out sexp compared to GLM2
 
-GLMPois3  <- glm(nbrtotc~AGEPH+agecar+fuelc+split+fleetc+sportc+coverp+powerc+INS,offset=log(duree),data= Data, family=poisson(link="log"))
-
+GLMPois3  <- glm(nbrtotc~AGEPH+agecar+fuelc+split+fleetc+coverp+powerc+INS,offset=log(duree),data= Data, family=poisson(link="log"))
 summary(GLMPois3)
 
 # Output GLMPois3
 # Coefficients:
 
-# Coefficients:
-# Estimate Std. Error z value Pr(>|z|)    
-# (Intercept)      -0.92408    0.09465  -9.764  < 2e-16 ***
-#  AGEPH37-56       -0.28901    0.01607 -17.982  < 2e-16 ***
-#  AGEPH57-76       -0.49167    0.02058 -23.886  < 2e-16 ***
-# AGEPH>76         -0.32317    0.05223  -6.188 6.11e-10 ***
-# agecar2-5        -0.25048    0.03294  -7.603 2.89e-14 ***
-# agecar6-10       -0.19397    0.03362  -5.770 7.92e-09 ***
-# agecar>10        -0.17652    0.03577  -4.935 8.01e-07 ***
-# fuelcPetrol      -0.17545    0.01525 -11.504  < 2e-16 ***
-# splitThrice       0.09250    0.02895   3.196 0.001394 ** 
-# splitTwice       -0.13370    0.02319  -5.766 8.13e-09 ***
-# splitOnce        -0.33079    0.02187 -15.128  < 2e-16 ***
-# fleetcYes        -0.10084    0.04323  -2.333 0.019667 *  
-# sportcNo         -0.08866    0.07058  -1.256 0.209063    
-# coverpMTPL+      -0.13789    0.01767  -7.806 5.92e-15 ***
-# coverpMTPL+++    -0.15856    0.02472  -6.415 1.41e-10 ***
-# powerc<66        -0.24287    0.07037  -3.451 0.000558 ***
-# powerc66-110     -0.16264    0.07042  -2.310 0.020907 *  
-# INSAntwerp        0.03698    0.03128   1.182 0.237107    
-# INSBrabant & BXL  0.25876    0.02832   9.138  < 2e-16 ***
-# INSEast Flanders  0.11078    0.03121   3.549 0.000386 ***
-# INSHainaut        0.01073    0.02839   0.378 0.705411    
-# INSLiege          0.08663    0.03108   2.787 0.005313 ** 
-# INSLimburg       -0.04103    0.04021  -1.021 0.307445    
-# INSLuxembourg    -0.21773    0.05663  -3.844 0.000121 ***
-# INSNamur         -0.09645    0.04053  -2.380 0.017317 *   
+#Coefficients:
+#  Estimate Std. Error z value Pr(>|z|)    
+#(Intercept)      -0.98705    0.08066 -12.237  < 2e-16 ***
+#  AGEPH37-56       -0.28988    0.01606 -18.054  < 2e-16 ***
+# AGEPH57-76       -0.49289    0.02056 -23.974  < 2e-16 ***
+# AGEPH>76         -0.32428    0.05222  -6.210 5.31e-10 ***
+# agecar2-5        -0.25015    0.03294  -7.593 3.12e-14 ***
+# agecar6-10       -0.19299    0.03361  -5.742 9.33e-09 ***
+# agecar>10        -0.17569    0.03576  -4.913 8.99e-07 ***
+# fuelcPetrol      -0.17471    0.01524 -11.465  < 2e-16 ***
+# splitThrice       0.09378    0.02893   3.242 0.001188 ** 
+# splitTwice       -0.13267    0.02317  -5.725 1.03e-08 ***
+# splitOnce        -0.33011    0.02186 -15.102  < 2e-16 ***
+# fleetcYes        -0.10072    0.04323  -2.330 0.019816 *  
+# coverpMTPL+      -0.13795    0.01767  -7.809 5.77e-15 ***
+# coverpMTPL+++    -0.15896    0.02472  -6.431 1.27e-10 ***
+# powerc<66        -0.26919    0.06698  -4.019 5.84e-05 ***
+# powerc66-110     -0.18640    0.06768  -2.754 0.005883 ** 
+# INSAntwerp        0.03616    0.03127   1.156 0.247600    
+# INSBrabant & BXL  0.25790    0.02831   9.111  < 2e-16 ***
+# INSEast Flanders  0.11013    0.03120   3.529 0.000417 ***
+#  INSHainaut        0.01007    0.02839   0.355 0.722890    
+# INSLiege          0.08604    0.03108   2.769 0.005628 ** 
+#  INSLimburg       -0.04143    0.04020  -1.031 0.302726    
+# INSLuxembourg    -0.21820    0.05663  -3.853 0.000117 ***
+#  INSNamur         -0.09697    0.04052  -2.393 0.016718 * 
 
 # dataframes with the expected frequency numbers for reference group based on different GLMs and the correction values for other factor levels
 
@@ -435,33 +433,46 @@ summary(GLMPois1Full)
       # Drop-in-deviance test between GLMPois1Full and GLMPois3 model.
       GLMPois3$deviance - GLMPois1Full$deviance
       
-      pchisq(GLMPois3$deviance - GLMPois1Full$deviance, df = df.residual(GLMPois3)-df.residual(GLMPois1Full), lower = F) #0.01742042 Not Significant on the 99% CI, but significant on the 95% CI 
+      pchisq(GLMPois3$deviance - GLMPois1Full$deviance, df = df.residual(GLMPois3)-df.residual(GLMPois1Full), lower = F) #0.02186997 Not Significant on the 99% CI, but significant on the 95% CI 
+     
       
-      # we accepted GLMPois2 and rejected GLMPois1 (by the first chi-sq test), so it would be more logical to compare GLMPois2 with GLMPois3.
+      # Drop-in-deviance test between GLMPois1Full and GLMPois3 model.
+      GLMPois3$deviance - GLMPois2$deviance
+      
+      pchisq(GLMPois3$deviance - GLMPois2$deviance, df = df.residual(GLMPois3)-df.residual(GLMPois2), lower = F) #0.006875533 Significan
+      
+      
+      # we accepted GLMPois2 and rejected GLMPois1 (by the first chi-sq test)
       # Be residual deviance between GLMPois1 and GLMPois2 are negligible  
+      
       
 # 1.7. Technical premium for each risk profile based on GLMs ####
 
 # We will use model X, and thus frequency table TARFRX and severity table TARSVX to calculate the premium.
-      
-  # Lambda (Poisson)
-      variance_covariancePois <- vcov(GLMPois3)
 
-      # Low risk
-      Low_risk <-c("(Intercept)", "AGEPH57-76", "fuelcPetrol", "splitOnce", "fleetcYes", "fleetcYes", "coverpMTPL+++", "powerc<66", "INSLuxembourg")
-      variance_covariance_Poislow <- variance_covariancePois[Low_risk, Low_risk]
-      Lambda_low <- sum(variance_covariance_Poislow)
+      # Lambda (Poisson)
+      summary(GLMPois2)
+      mean <- coef(GLMPois2)
       
+      # Low risk
+      Low_risk <-c("(Intercept)", "AGEPH57-76", "agecar2-5","sexpMale", "fuelcPetrol", "splitOnce", "fleetcYes", "coverpMTPL+++", "powerc<66", "INSLuxembourg")
+      mean_Poislow <- mean[Low_risk]
+      mean_Poislow <- sum(mean_Poislow)
+      mean_Poislow
+      Lambda_low <- exp(mean_Poislow)
       # Medium risk
-      Medium_risk <- c("(Intercept)", "AGEPH37-56", "agecar>10", "fuelcPetrol","fleetcYes","coverpMTPL+","powerc66-110","INSAntwerp")
-      variance_covariance_Poismedium <- variance_covariancePois[Medium_risk, Medium_risk]
-      Lambda_medium <- sum(variance_covariance_Poismedium)
-  
+      Medium_risk <- c("(Intercept)", "AGEPH37-56", "agecar>10","sexpMale", "fuelcPetrol","fleetcYes","coverpMTPL+","powerc66-110","INSAntwerp")
+      mean_Poismedium <- mean[Medium_risk]
+      mean_Poismedium <- sum(mean_Poismedium)
+      mean_Poismedium
+      Lambda_medium<- exp(mean_Poismedium)
+      
       # High risk
       High_risk <- c("(Intercept)", "splitThrice", "INSBrabant & BXL")
-      variance_covariance_Poishigh <- variance_covariancePois[High_risk, High_risk]
-      Lambda_high <- sum(variance_covariance_Poishigh)      
-      
+      mean_Poishigh <- mean[High_risk]
+      mean_Poishigh <- sum(mean_Poishigh)
+      mean_Poishigh
+      Lambda_high<- exp(mean_Poishigh)
       
     # Alpha and Beta (Gamma) (To be updated once we have our GammaGLM) TBC
       
@@ -496,12 +507,9 @@ summary(GLMPois1Full)
       Mean_Gammahigh <- mean_Gamma[High_risk]
       Mean_high <- sum(Mean_Gammahigh)   
       
-      
-      
       #alpha <- (Mean_gamma / Variance_gamma)^2
       # beta <- Mean_gamma / Variance_gamma
 
-      
       #alpha & beta
       # Low risk 
       alpha_low <- (Mean_low/Variance_gamma_low)^2
