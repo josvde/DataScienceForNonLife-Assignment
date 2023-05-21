@@ -247,7 +247,8 @@ summary(GLMPois2)
 
 # create GLM3PoisDscrtv based on a selection of covariates based on the descriptive analysis (see section 2.5)
 
-GLM3PoisDscrtv <- glm(nbrtotc~AGEPH+agecar+fuelc+split+fleetc+coverp+powerc+INS,offset=log(duree),data= Data, family=poisson(link="log"))
+GLMPois3Dscrtv <- glm(nbrtotc~AGEPH+agecar+fuelc+fleetc+coverp+powerc+INS,offset=log(duree),data= Data, family=poisson(link="log"))
+summary(GLMPois3Dscrtv)
 
 # Output GLMPois3Dscrtv
 # Coefficients:
@@ -318,7 +319,7 @@ summary(GLMPois3)
 TARFR1 <- data.frame(Name=names(coefficients(GLMPois1Full)),E_Freq=exp(coefficients(GLMPois1Full)))
 TARFR2 <- data.frame(Name=names(coefficients(GLMPois2)),E_Freq=exp(coefficients(GLMPois2)))
 TARFR3 <- data.frame(Name=names(coefficients(GLMPois3Dscrtv)),E_Freq=exp(coefficients(GLMPois3Dscrtv)))
-TARFR4 <- data.frame(Name=names(coefficients(GLMPois3Dscrtv2)),E_Freq=exp(coefficients(GLMPois3Dscrtv2)))
+TARFR4 <- data.frame(Name=names(coefficients(GLMPois3)),E_Freq=exp(coefficients(GLMPois3)))
 
 # 1.4. Poisson GLMs & expected frequency tables [one dummy gamma uploading for testing model selection and risk loading####
 
@@ -352,12 +353,12 @@ summary(GLMPois1Full)
       cat("AIC for GLMPois1Full:", AIC_GLMPois1Full, "\n")
       cat("AIC for GLMPois2:", AIC_GLMPois2, "\n")
       cat("AIC for GLMPois3Dscrtv:", AIC_GLMPois3Dscrtv, "\n")
-      cat("AIC for GLMPois3:", AIC_GLMGLMPois3, "\n")
+      cat("AIC for GLMPois3:", AIC_GLMPois3, "\n")
       
       cat("BIC for GLMPois1Full:", BIC_GLMPois1Full, "\n")
       cat("BIC for GLMPois2:", BIC_GLMPois2, "\n")
       cat("BIC for GLMPois3Dscrtv:", BIC_GLMPois3Dscrtv, "\n")
-      cat("BIC for GLMPois3:", BIC_GLMGLMPois3, "\n")
+      cat("BIC for GLMPois3:", BIC_GLMPois3, "\n")
       
   # Deviance
   
