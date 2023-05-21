@@ -130,13 +130,18 @@ lapply(Data,class)
   
   frequency_by_split
   
+  # Convert 'split' variable to an ordered factor
+  frequency_by_split$split <- factor(frequency_by_split$split,
+                                     levels = c('Monthly', 'Thrice', 'Twice', 'Once'),
+                                     ordered = TRUE)
+  
+  # Create the bar plot
   Freq.split <- ggplot(frequency_by_split, aes(x = split, y = avg_freq)) + 
     theme_bw() +
-    geom_bar(stat = "identity", alpha = .5) +
+    geom_bar(stat = "identity", alpha = 0.5) +
     ggtitle("Claim split") +
     labs(x = "", y = "Claim Frequency") +
     theme(plot.title = element_text(hjust = 0.5))
-
 
 #### 2.1.6 Use of Car ####
   
@@ -436,13 +441,18 @@ severity_by_split <- Data_no_out %>%
 
 severity_by_split
 
+# Convert 'split' variable to an ordered factor
+severity_by_split$split <- factor(severity_by_split$split,
+                                  levels = c('Monthly', 'Thrice', 'Twice', 'Once'),
+                                  ordered = TRUE)
+
+# Create the bar plot
 Sev.split <- ggplot(severity_by_split, aes(x = split, y = Claim_sev)) + 
   theme_bw() +
-  geom_bar(stat = "identity", alpha = .5) +
+  geom_bar(stat = "identity", alpha = 0.5) +
   ggtitle("Claim split") +
   labs(x = "", y = "Claim Severity") +
   theme(plot.title = element_text(hjust = 0.5))
-
 
 
 #### 2.2.6 Use of Car ####

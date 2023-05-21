@@ -422,59 +422,84 @@ summary(GLMPois1Full)
 # We will use model X, and thus frequency table TARFRX and severity table TARSVX to calculate the premium.
       
   # Lambda (Poisson)
-      # Calculate the variance-covariance matrix
-      variance_matrix <- vcov(GLMPois3)
+      variance_covariancePois <- vcov(GLMPois3)
+
+      # Low risk
+      Low_risk <-c("(Intercept)", "AGEPH57-76", "fuelcPetrol", "splitOnce", "fleetcYes", "fleetcYes", "coverpMTPL+++", "powerc<66", "INSLuxembourg")
+      variance_covariance_Poislow <- variance_covariancePois[Low_risk, Low_risk]
+      Lambda_low <- sum(variance_covariance_Poislow)
       
-      # Extract the variances of the coefficients
-      Lambda <- diag(variance_matrix)
-      
-      # Low risk 
-      Lambda_low <- sum(Lambda[c("(Intercept)", "AGEPH57-76", "fuelcPetrol","splitOnce","fleetcYes","fleetcYes","coverpMTPL+++","powerc<66","INSLuxembourg")])
-      beta_low
       # Medium risk
-      Lambda_medium <- sum(Lambda[c("(Intercept)", "AGEPH37-56", "agecar>10", "fuelcPetrol","fleetcYes","coverpMTPL+","powerc66-110","INSAntwerp")])
-      Lambda_medium   
+      Medium_risk <- c("(Intercept)", "AGEPH37-56", "agecar>10", "fuelcPetrol","fleetcYes","coverpMTPL+","powerc66-110","INSAntwerp")
+      variance_covariance_Poismedium <- variance_covariancePois[Medium_risk, Medium_risk]
+      Lambda_medium <- sum(variance_covariance_Poismedium)
+  
       # High risk
-      Lambda_high <- sum(Lambda[c("(Intercept)", "splitThrice", "INSBrabant & BXL")])
-      Lambda_high
-    
-      # Note JVDE: I don't yet understand the method you used. The ease thing about the Poisson is that the variance is equal to the lambda.
-      # So we would just need to calculate lambda via the coefficient values.
-      # But calculating the lambda this way ofcourse doesn't takes into account that the Beta's also have variance of themselves.
-      # So in conclusion, we need the formula proposed in the word file to get the real variance of the lambda
+      High_risk <- c("(Intercept)", "splitThrice", "INSBrabant & BXL")
+      variance_covariance_Poishigh <- variance_covariancePois[High_risk, High_risk]
+      Lambda_high <- sum(variance_covariance_Poishigh)      
+      
       
     # Alpha and Beta (Gamma) (To be updated once we have our GammaGLM) TBC
       
-      #We calculate first the mean and variance of the gamma
-        Variance_matrix_gamma <- vcov(GLMGamma1Full)
-        Variance_gamma <- diag(Variance_matrix_gamma)
-        coef_summary <- summary(GLMPois1Full)$coefficients
-        Mean_gamma <- coef_summary[, "Estimate"]
-        
-        alpha <- (Mean_gamma / Variance_gamma)^2
-        beta <- Mean_gamma / Variance_gamma
+      #Variance
       
-        #alpha
-        # Low risk 
-        alpha_low <- sum(alpha[c("(Intercept)", "AGEPH57-76", "fuelcPetrol","splitOnce","fleetcYes","fleetcYes","coverpMTPL+++","powerc<66","INSLuxembourg")])
-        alpha_low
-        # Medium risk
-        alpha_medium <- sum(alpha[c("(Intercept)", "AGEPH37-56", "agecar>10", "fuelcPetrol","fleetcYes","coverpMTPL+","powerc66-110","INSAntwerp")])
-        alpha_medium   
-        # High risk
-        alpha_high <- sum(alpha[c("(Intercept)", "splitThrice", "INSBrabant & BXL")])
-        alpha_high
-        
-      #beta
-        # Low risk 
-        beta_low <- sum(beta[c("(Intercept)", "AGEPH57-76", "fuelcPetrol","splitOnce","fleetcYes","fleetcYes","coverpMTPL+++","powerc<66","INSLuxembourg")])
-        beta_low
-        # Medium risk
-        beta_medium <- sum(beta[c("(Intercept)", "AGEPH37-56", "agecar>10", "fuelcPetrol","fleetcYes","coverpMTPL+","powerc66-110","INSAntwerp")])
-        beta_medium   
-        # High risk
-        beta_high <- sum(beta[c("(Intercept)", "splitThrice", "INSBrabant & BXL")])
-        beta_high
+      variance_covarianceGamma <- vcov(GLMPois3)
+      # Low risk
+      variance_covariance_Gammalow <- variance_covarianceGamma[Low_risk, Low_risk]
+      Variance_gamma_low <- sum(variance_covariance_Gammalow)
+
+      # Medium risk
+      variance_covariance_Gammamedium <- variance_covarianceGamma[Medium_risk, Medium_risk]
+      Variance_gamma_medium <- sum(variance_covariance_Gammamedium)
+      
+      # High risk
+      variance_covariance_Gammahigh <- variance_covarianceGamma[High_risk, High_risk]
+      Variance_gamma_high <- sum(variance_covariance_Gammahigh)         
+
+      # mean 
+      
+      mean_Gamma <- coef(summary(GLMPois3))[, 1]
+      
+      # Low risk
+      Mean_Gammalow <- mean_Gamma[Low_risk]
+      Mean_low <- sum(Mean_Gammalow)
+      
+      # Medium risk
+      Mean_Gammamedium <- mean_Gamma[Medium_risk]
+      Mean_medium <- sum(Mean_Gammamedium)
+      
+      # High risk
+      Mean_Gammahigh <- mean_Gamma[High_risk]
+      Mean_high <- sum(Mean_Gammahigh)   
+      
+      
+      
+      #alpha <- (Mean_gamma / Variance_gamma)^2
+      # beta <- Mean_gamma / Variance_gamma
+
+      
+      #alpha & beta
+      # Low risk 
+      alpha_low <- (Mean_low/Variance_gamma_low)^2
+      alpha_low
+      beta_low <- (Mean_low/Variance_gamma_low)
+      beta_low
+      
+      # Medium risk
+ 
+      alpha_medium <- (Mean_medium/Variance_gamma_medium)^2
+      alpha_medium
+      beta_medium <- (Mean_medium/Variance_gamma_medium)
+      beta_medium
+      
+      
+      # High risk
+      alpha_high <- (Mean_high/Variance_gamma_high)^2
+      alpha_high
+      beta_high <- (Mean_high/Variance_gamma_high)
+      beta_high
+      
         
 # Mean and variance loss function
         
