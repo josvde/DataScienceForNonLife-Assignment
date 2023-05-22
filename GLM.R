@@ -241,38 +241,8 @@ summary(GLMPois2)
 #   INSLuxembourg    -0.21852    0.05663  -3.858  0.000114 ***
 #   INSNamur         -0.09657    0.04052  -2.383  0.017172 * 
 
-# create GLM3PoisDscrtv based on a selection of covariates based on the descriptive analysis (see section 2.5)
 
-GLMPois3Dscrtv <- glm(nbrtotc~AGEPH+agecar+fuelc+fleetc+coverp+powerc+INS,offset=log(duree),data= Data, family=poisson(link="log"))
-summary(GLMPois3Dscrtv)
-
-# Output GLMPois3Dscrtv
-# Coefficients:
-#                    Estimate    Std. Error z value Pr(>|z|)    
-#   (Intercept)      -1.168133   0.092175  -12.673  < 2e-16 ***
-#   AGEPH37-56       -0.320574   0.015945  -20.106  < 2e-16 ***
-#   AGEPH57-76       -0.574470   0.020118  -28.556  < 2e-16 ***
-#   AGEPH>76         -0.455401   0.051771  -8.796   < 2e-16 ***
-#   agecar2-5        -0.253180   0.032948  -7.684  1.54e-14 ***
-#   agecar6-10       -0.193536   0.033616  -5.757  8.55e-09 ***
-#   agecar>10        -0.152046   0.035725  -4.256  2.08e-05 ***
-#   fuelcPetrol      -0.175291   0.015246  -11.498  < 2e-16 ***
-#   fleetcYes        -0.147814   0.043054  -3.433  0.000596 ***
-#   sportcNo         -0.090198   0.070534  -1.279  0.200975    
-#   coverpMTPL+      -0.129427   0.017635  -7.339  2.15e-13 ***
-#   coverpMTPL+++    -0.126873   0.024512  -5.176  2.27e-07 ***
-#   powerc<66        -0.229338   0.070373  -3.259  0.001118 ** 
-#   powerc66-110     -0.147023   0.070427  -2.088  0.036834 *  
-#   INSAntwerp        0.082053   0.031062   2.642  0.008253 ** 
-#   INSBrabant & BXL  0.346496   0.027849  12.442   < 2e-16 ***
-#   INSEast Flanders  0.123843   0.031192   3.970  7.18e-05 ***
-#   INSHainaut        0.103185   0.027797   3.712  0.000206 ***
-#   INSLiege          0.191432   0.030527   6.271  3.59e-10 ***
-#   INSLimburg       -0.000784   0.040107  -0.020  0.984403    
-#   INSLuxembourg    -0.121341   0.056349  -2.153  0.031287 *  
-#   INSNamur          0.009628   0.040053   0.240  0.810030 
-
-# create GLM3PoisDscrtv2 where we only leave out sexp compared to GLM2
+# create GLMPois2 where we only leave out sexp compared to GLM2
 
 GLMPois3  <- glm(nbrtotc~AGEPH+agecar+fuelc+split+fleetc+coverp+powerc+INS,offset=log(duree),data= Data, family=poisson(link="log"))
 summary(GLMPois3)
@@ -311,8 +281,7 @@ summary(GLMPois3)
 
 TARFR1 <- data.frame(Name=names(coefficients(GLMPois1Full)),E_Freq=exp(coefficients(GLMPois1Full)))
 TARFR2 <- data.frame(Name=names(coefficients(GLMPois2)),E_Freq=exp(coefficients(GLMPois2)))
-TARFR3 <- data.frame(Name=names(coefficients(GLMPois3Dscrtv)),E_Freq=exp(coefficients(GLMPois3Dscrtv)))
-TARFR4 <- data.frame(Name=names(coefficients(GLMPois3)),E_Freq=exp(coefficients(GLMPois3)))
+TARFR3 <- data.frame(Name=names(coefficients(GLMPois3)),E_Freq=exp(coefficients(GLMPois3)))
 
 # 1.3.2 Poisson GLMs with interaction terms ####
 
@@ -360,7 +329,8 @@ GLMPoisIT1_3 <- glm(nbrtotc~AGEPH+INS+fuelc+split+coverp+powerc+AGEPH:INS+AGEPH:
 anova(GLMPois1Full,GLMPoisIT1_3,test="LRT")
 
 
-# 1.4. Data cleaning and formatting for Gamma GLM
+
+# 1.4. Data cleaning and formatting for Gamma GLM ####
 
 # load dataset with no outliers
 DataCleaned <- Data[which(Data$chargtot  > 0),]
@@ -371,11 +341,24 @@ Data_no_out$avgCA <- Data_no_out$chargtot/Data_no_out$nbrtotc
 # 1.5. Gamma GLMs & expected severity tables ####
 # Gamma regression for severity
 
-GLMGamma1Full <- glm(avgCA ~ AGEPH + agecar + sexp + fuelc + split + usec + fleetc + sportc + coverp + powerc + INS, offset = log(duree), data = Data_no_out, family = Gamma(link = "log"))
+GLMGamma1FullJVDE <- glm(avgCA ~ AGEPH + agecar + sexp + fuelc + split + usec + fleetc + sportc + coverp + powerc + INS, offset = log(duree), data = Data_no_out, family = Gamma(link = "log"))
 summary(GLMGamma1Full)
 
-GLMGamma2 <- glm(avgCA~AGEPH+agecar+split+coverp+AGEPH:split,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
+
+GLMGamma2JVDE <- glm(avgCA~AGEPH+agecar+split+coverp+AGEPH:split,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
+
+GLMGamma3 <- glm(avgCA~AGEPH+agecar+fuelc+fleetc+coverp+powerc+INS,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
+summary(GLMGamma3)
+
+GLMGamma2RD <- glm(avgCA~AGEPH+agecar+sexp+fuelc+split+fleetc+coverp+powerc+INS,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
+
 summary(GLMGamma2)
+
+GLMGamma4 <- glm(avgCA~AGEPH+coverp+INS,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
+summary(GLMGamma4)
+
+GLMGamma5 <- glm(avgCA~AGEPH+coverp,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
+summary(GLMGamma5)
 
 # 1.6. Model selection ####
 
@@ -386,25 +369,21 @@ summary(GLMGamma2)
       # Calculate AIC
       AIC_GLMPois1Full <- AIC(GLMPois1Full)
       AIC_GLMPois2 <- AIC(GLMPois2)
-      AIC_GLMPois3Dscrtv <- AIC(GLMPois3Dscrtv)
       AIC_GLMPois3 <- AIC(GLMPois3)
       
       # Calculate BIC
       BIC_GLMPois1Full <- BIC(GLMPois1Full)
       BIC_GLMPois2 <- BIC(GLMPois2)
-      BIC_GLMPois3Dscrtv <- BIC(GLMPois3Dscrtv)
       BIC_GLMPois3 <- BIC(GLMPois3)
       
           
       # Print the AIC and BIC values
       cat("AIC for GLMPois1Full:", AIC_GLMPois1Full, "\n")
       cat("AIC for GLMPois2:", AIC_GLMPois2, "\n")
-      cat("AIC for GLMPois3Dscrtv:", AIC_GLMPois3Dscrtv, "\n")
       cat("AIC for GLMPois3:", AIC_GLMPois3, "\n")
       
       cat("BIC for GLMPois1Full:", BIC_GLMPois1Full, "\n")
       cat("BIC for GLMPois2:", BIC_GLMPois2, "\n")
-      cat("BIC for GLMPois3Dscrtv:", BIC_GLMPois3Dscrtv, "\n")
       cat("BIC for GLMPois3:", BIC_GLMPois3, "\n")
       
   # Deviance
@@ -413,8 +392,7 @@ summary(GLMGamma2)
       deviance(GLMPois1Full)
     # GLMPois2
       deviance(GLMPois2)
-    # GLMPois3Dscrtv
-      deviance(GLMPois3Dscrtv)
+
     # GLMPois3Dscrtv2
       deviance(GLMPois3)
       
@@ -429,11 +407,6 @@ summary(GLMGamma2)
   
       pchisq(GLMPois2$deviance - GLMPois1Full$deviance, df = df.residual(GLMPois2)-df.residual(GLMPois1Full) , lower = F) #0.310899 Not significant 
       
-      # Drop-in-deviance test between GLMPois1Full and GLMPois3Dscrtv model.
-      GLMPois3Dscrtv$deviance - GLMPois1Full$deviance
-      
-      pchisq(GLMPois3Dscrtv$deviance - GLMPois1Full$deviance, df = df.residual(GLMPois3Dscrtv)-df.residual(GLMPois1Full), lower = F) #1.709847e-89 Significant on the 95% CI -> Thus going from current model to full improves the fit significantly 
-  
       # Drop-in-deviance test between GLMPois1Full and GLMPois3 model.
       GLMPois3$deviance - GLMPois1Full$deviance
       
@@ -443,7 +416,7 @@ summary(GLMGamma2)
       # Drop-in-deviance test between GLMPois2 and GLMPois3 model.
       GLMPois3$deviance - GLMPois2$deviance
       
-      pchisq(GLMPois3$deviance - GLMPois2$deviance, df = df.residual(GLMPois3)-df.residual(GLMPois2), lower = F) #0.006875533 Significan
+      pchisq(GLMPois3$deviance - GLMPois2$deviance, df = df.residual(GLMPois3)-df.residual(GLMPois2), lower = F) #0.006875533 Significant
       
       
       # we accepted GLMPois2 and rejected GLMPois1 (by the first chi-sq test)
@@ -452,21 +425,84 @@ summary(GLMGamma2)
       # Why almost accept model 3 when comparing to model 1, but reject model 3 when comparing to model 2? 
       # we can explain this because the drop in degrees of freedom is higher from model 1 to model 3, this results in a higher q-parameter for the chi-sq test statistic..
       #this difference is smaller when comparing model 3 to 2. There the same increase in deviance holds, but difference in degrees of freedom is smaller...
+ 
       
-# 1.6.2. Gamma Regression selection ####
+# 1.6.1 Poisson ####
+      
+  # AIC/BIC
+      
+     # Calculate AIC
+      AIC_GLMGAM1Full <- AIC(GLMGamma1Full)
+      AIC_GLMGAM2 <- AIC(GLMGamma2)
+      AIC_GLMGAM3 <- AIC(GLMGamma3)
+      
+      # Calculate BIC
+      BIC_GLMGAM1Full <- BIC(GLMPois1Full)
+      BIC_GLMGAM2 <- BIC(GLMGamma2)
+      BIC_GLMGAM3 <- BIC(GLMGamma3)
+      
+      
+      # Print the AIC and BIC values
+      cat("AIC for GLMGamma1Full:", AIC_GLMPois1Full, "\n")
+      cat("AIC for GLMGamma2:", AIC_GLMGAM2, "\n")
+      cat("AIC for GLMGamma3:", AIC_GLMGAM3, "\n")
+      
+      cat("BIC for GLMGamma1Full:", BIC_GLMPois1Full, "\n")
+      cat("BIC for GLMGamma2:", BIC_GLMGAM2, "\n")
+      cat("BIC for GLMGamma3:", BIC_GLMGAM3, "\n") 
+      
+  # Deviance
+      
+      # GLMPois1Full
+      deviance(GLMGamma1Full)
+      # GLMPois2
+      deviance(GLMGamma2)
+      
+      # GLMPois3Dscrtv2
+      deviance(GLMGamma3)
+      
+  # Drop in deviance
+      
+      # A first general look at the drop in deviance by starting from the model with only an intercept and than adding the covariates one by one. 
+      # gives us a first indication of if the factor variable matter or not     
+      anova(GLMGamma1Full,test="Chisq")
+      
       # Drop-in-deviance test between GLMGamma1Full and GLMGamma2 model.
       GLMGamma2$deviance - GLMGamma1Full$deviance
-      pchisq(GLMGamma2$deviance - GLMGamma1Full$deviance, df = df.residual(GLMGamma2)-df.residual(GLMGamma1Full), lower = F) #0.006875533 Significan
       
-      #We note that the 
+      pchisq(GLMGamma2$deviance - GLMGamma1Full$deviance, df = df.residual(GLMGamma2)-df.residual(GLMGamma1Full) , lower = F) #0.310899 Not significant 
+      
+      # Drop-in-deviance test between GLMGamma1Full and GLMGamma3 model.
+      GLMGamma3$deviance - GLMGamma1Full$deviance
+      
+      pchisq(GLMGamma3$deviance - GLMGamma1Full$deviance, df = df.residual(GLMGamma3)-df.residual(GLMGamma1Full), lower = F) #0.02186997 Not Significant on the 99% CI, but significant on the 95% CI
+      
+      
+      # Drop-in-deviance test between GLMGamma1Full and GLMGamma3 model.
+      GLMGamma3$deviance - GLMGamma2$deviance
+      
+      pchisq(GLMGamma3$deviance - GLMGamma2$deviance, df = df.residual(GLMGamma3)-df.residual(GLMGamma2), lower = F) #0.006875533 Significant
+      
+      
+# 1.6.2. Gamma Regression selection ####
+      
+      # Drop-in-deviance test between GLMGamma1Full and GLMGamma2 model.
+      GLMGamma2JVDE$deviance - GLMGamma1FullJVDE$deviance
+      
+      #we don't need the chi-squared test, as we can see that the deviance of model 2 is smaller, with a smaller number of parameters.
+      #so our preference will always go to model 2 (as the p-value of 100% below can confirm ;) )
+      
+      pchisq(GLMGamma2JVDE$deviance - GLMGamma1FullJVDE$deviance, df = df.residual(GLMGamma2JVDE)-df.residual(GLMGamma1FullJVDE), lower = F) #
       
 # 1.7. Technical premium for each risk profile based on GLMs ####
 
-# We will use model X, and thus frequency table TARFRX and severity table TARSVX to calculate the premium.
+# We will use model 2, and thus frequency table TARFR2 and severity table TARSV2 to calculate the premium.
 
       # Lambda (Poisson)
       summary(GLMPois2)
       mean <- coef(GLMPois2)
+      variance<- vcov(GLMPois2)
+      
       
       # Low risk
       Low_risk <-c("(Intercept)", "AGEPH57-76", "agecar2-5","sexpMale", "fuelcPetrol", "splitOnce", "fleetcYes", "coverpMTPL+++", "powerc<66", "INSLuxembourg")
@@ -492,7 +528,7 @@ summary(GLMGamma2)
       
       #Variance
       
-      variance_covarianceGamma <- vcov(GLMPois3)
+      variance_covarianceGamma <- vcov(GLMGamma2)
       # Low risk
       variance_covariance_Gammalow <- variance_covarianceGamma[Low_risk, Low_risk]
       Variance_gamma_low <- sum(variance_covariance_Gammalow)
@@ -507,7 +543,7 @@ summary(GLMGamma2)
 
       # mean 
       
-      mean_Gamma <- coef(summary(GLMPois3))[, 1]
+      mean_Gamma <- coef(summary(GLMGamma2))[, 1]
       
       # Low risk
       Mean_Gammalow <- mean_Gamma[Low_risk]
@@ -594,8 +630,6 @@ summary(GLMGamma2)
       Mean_L_medium+0.75*sqrt(Variance_L_medium)+1.5*(Variance_L_medium)
       #high
       Mean_L_high+0.75*sqrt(Variance_L_high)+1.5*(Variance_L_high)
-
-# JF calculated the final frequency value already in a Word table. Check if R reports the same value!
 
 # 2. Extra ####
 # Investigate what would be relevant and appropriate interaction terms of 2 or more covariates
