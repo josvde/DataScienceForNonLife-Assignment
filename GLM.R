@@ -344,23 +344,61 @@ Data_no_out$avgCA <- Data_no_out$chargtot/Data_no_out$nbrtotc
 GLMGamma1Full <- glm(avgCA ~ AGEPH + agecar + sexp + fuelc + split + usec + fleetc + sportc + coverp + powerc + INS, offset = log(duree), data = Data_no_out, family = Gamma(link = "log"))
 summary(GLMGamma1Full)
 
+# Estimate Std. Error t value Pr(>|t|)    
+#(Intercept)       8.455687   0.870605   9.712  < 2e-16 ***
+# AGEPH37-56       -0.267664   0.143904  -1.860  0.06290 .  
+# AGEPH57-76       -0.453512   0.183605  -2.470  0.01352 *  
+# AGEPH>76          0.164497   0.454063   0.362  0.71715    
+# agecar2-5        -0.593912   0.292204  -2.033  0.04212 *  
+# agecar6-10       -0.607928   0.299407  -2.030  0.04233 *  
+# agecar>10        -0.414939   0.319215  -1.300  0.19366    
+# sexpMale          0.029173   0.142457   0.205  0.83774    
+# fuelcPetrol       0.035443   0.136768   0.259  0.79553    
+# splitThrice      -0.211652   0.259240  -0.816  0.41426    
+# splitTwice       -0.466715   0.205592  -2.270  0.02321 *  
+# splitOnce        -0.262378   0.194253  -1.351  0.17681    
+# usecProfessional  0.135740   0.293651   0.462  0.64391    
+# fleetcYes        -0.194543   0.380743  -0.511  0.60939    
+# sportcNo          0.013520   0.622625   0.022  0.98268    
+# coverpMTPL+      -0.426445   0.157609  -2.706  0.00682 ** 
+# coverpMTPL+++     0.027975   0.218238   0.128  0.89800    
+# powerc<66         0.202851   0.627862   0.323  0.74664    
+# powerc66-110      0.425574   0.627848   0.678  0.49789    
+# INSAntwerp        0.200052   0.275885   0.725  0.46838    
+# INSBrabant & BXL -0.084290   0.252537  -0.334  0.73855    
+# INSEast Flanders  0.008149   0.277311   0.029  0.97656    
+# INSHainaut       -0.120498   0.251617  -0.479  0.63202    
+# INSLiege         -0.149485   0.276137  -0.541  0.58828    
+# INSLimburg        0.365422   0.355543   1.028  0.30406    
+# INSLuxembourg    -0.091139   0.502082  -0.182  0.85596    
+# INSNamur         -0.100887   0.358046  -0.282  0.77812    
 
-GLMGamma2JVDE <- glm(avgCA~AGEPH+agecar+split+coverp+AGEPH:split,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
-summary(GLMGamma2JVDE)
+GLMGamma2 <- glm(avgCA~AGEPH+agecar+split+coverp+AGEPH:split,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
+summary(GLMGamma2)
 
+# Estimate Std. Error t value Pr(>|t|)    
+# (Intercept)             9.08624    0.41172  22.069  < 2e-16 ***
+#  AGEPH37-56             -1.08219    0.36230  -2.987  0.00282 ** 
+# AGEPH57-76             -0.87443    0.51877  -1.686  0.09189 .  
+# AGEPH>76               -0.38163    3.26923  -0.117  0.90707    
+# agecar2-5              -0.43270    0.29876  -1.448  0.14753    
+# agecar6-10             -0.45236    0.30537  -1.481  0.13853    
+# agecar>10              -0.32122    0.32446  -0.990  0.32218    
+# splitThrice            -0.97627    0.38694  -2.523  0.01164 *  
+# splitTwice             -0.96201    0.33758  -2.850  0.00438 ** 
+# splitOnce              -0.83986    0.33675  -2.494  0.01264 *  
+# coverpMTPL+            -0.45622    0.15630  -2.919  0.00352 ** 
+# coverpMTPL+++           0.12078    0.21940   0.551  0.58198    
+# AGEPH37-56:splitThrice  1.39863    0.55741   2.509  0.01211 *  
+# AGEPH57-76:splitThrice  0.16673    0.89583   0.186  0.85236    
+# AGEPH>76:splitThrice    0.32794    4.35939   0.075  0.94004    
+# AGEPH37-56:splitTwice   0.79928    0.44277   1.805  0.07106 .  
+# AGEPH57-76:splitTwice   0.37702    0.62429   0.604  0.54591    
+# AGEPH>76:splitTwice     0.06008    3.40493   0.018  0.98592    
+# AGEPH37-56:splitOnce    1.05700    0.43061   2.455  0.01411 *  
+# AGEPH57-76:splitOnce    0.55214    0.57997   0.952  0.34110    
+# AGEPH>76:splitOnce      0.68251    3.31449   0.206  0.83686   
 
-#RD DELETE:GLMGamma3 <- glm(avgCA~AGEPH+agecar+fuelc+fleetc+coverp+powerc+INS,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
-#RD DELETE:summary(GLMGamma3)
-
-#RD DELETE: GLMGamma2 <- glm(avgCA~AGEPH+agecar+split+coverp,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
-
-#RD DELETE: summary(GLMGamma2)
-
-#RD DELETE:GLMGamma4 <- glm(avgCA~AGEPH+coverp+INS,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
-#RD DELETE:summary(GLMGamma4)
-
-#RD DELETE:GLMGamma5 <- glm(avgCA~AGEPH+coverp,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
-#RD DELETE:summary(GLMGamma5)
 
 # 1.6. Model selection ####
 
@@ -435,23 +473,20 @@ summary(GLMGamma2JVDE)
       
      # Calculate AIC
       AIC_GLMGAM1Full <- AIC(GLMGamma1Full)
-      AIC_GLMGAM2 <- AIC(GLMGamma2JVDE)
-      #RD DELETE:AIC_GLMGAM3 <- AIC(GLMGamma3)
-      
+      AIC_GLMGAM2 <- AIC(GLMGamma2)
+
       # Calculate BIC
-      BIC_GLMGAM1Full <- BIC(AIC_GLMGAM1Full)
-      BIC(GLMGamma2JVDE)
-      #RD DELETE:BIC_GLMGAM3 <- BIC(GLMGamma2JVDERD)
-      
+      BIC_GLMGAM1Full <- BIC(GLMGamma1Full)
+      BIC_GLMGAM2 <- BIC(GLMGamma2)
+
       
       # Print the AIC and BIC values
-      cat("AIC for GLMGamma1Full:", AIC_GLMPois1Full, "\n")
+      cat("AIC for GLMGamma1Full:", AIC_GLMGAM1Full, "\n")
       cat("AIC for GLMGamma2:", AIC_GLMGAM2, "\n")
-      #RD DELETE:cat("AIC for GLMGamma3:", AIC_GLMGAM3, "\n")
-      
-      cat("BIC for GLMGamma1Full:", BIC_GLMPois1Full, "\n")
+
+      cat("BIC for GLMGamma1Full:", BIC_GLMGAM1Full, "\n")
       cat("BIC for GLMGamma2:", BIC_GLMGAM2, "\n")
-      #RD DELETE:cat("BIC for GLMGamma3:", BIC_GLMGAM3, "\n") 
+
       
   # Deviance
       
@@ -460,40 +495,15 @@ summary(GLMGamma2JVDE)
       # GLMPois2
       deviance(GLMGamma2)
       
-      # GLMPois3Dscrtv2
-      #RD DELETE:deviance(GLMGamma3)
-      
-  # Drop in deviance
-      
-      # A first general look at the drop in deviance by starting from the model with only an intercept and than adding the covariates one by one. 
-      # gives us a first indication of if the factor variable matter or not     
-      # anova(GLMGamma1Full,test="Chisq")
+  # Gamma Regression selection
       
       # Drop-in-deviance test between GLMGamma1Full and GLMGamma2 model.
-      #RD DELETE: GLMGamma2$deviance - GLMGamma1Full$deviance
-      
-      #RD DELETE: pchisq(GLMGamma2$deviance - GLMGamma1Full$deviance, df = df.residual(GLMGamma2)-df.residual(GLMGamma1Full) , lower = F) #0.310899 Not significant 
-      
-      # Drop-in-deviance test between GLMGamma1Full and GLMGamma3 model.
-      # GLMGamma2JVDE$deviance - GLMGamma1Full$deviance
-      
-      # pchisq(GLMGamma2JVDE$deviance - GLMGamma1Full$deviance, df = df.residual(GLMGamma2JVDE)-df.residual(GLMGamma1Full), lower = F) #0.02186997 Not Significant on the 99% CI, but significant on the 95% CI
-      
-      # Drop-in-deviance test between GLMGamma1Full and GLMGamma3 model.
-      #RD DELETE:GLMGamma3$deviance - GLMGamma2$deviance
-      
-      #RD DELETE: pchisq(GLMGamma3$deviance - GLMGamma2$deviance, df = df.residual(GLMGamma3)-df.residual(GLMGamma2), lower = F) #0.006875533 Significant
-      
-      
-# 1.6.2. Gamma Regression selection ####
-      
-      # Drop-in-deviance test between GLMGamma1Full and GLMGamma2 model.
-      #RD DELETE:GLMGamma2JVDE$deviance - GLMGamma1FullJVDE$deviance
+      GLMGamma2JVDE$deviance - GLMGamma1Full$deviance
       
       #we don't need the chi-squared test, as we can see that the deviance of model 2 is smaller, with a smaller number of parameters.
-      #so our preference will always go to model 2 (as the p-value of 100% below can confirm ;) )
+      #so our preference will always go to model 2 (as the p-value of 100% below can confirm)
       
-      #RD DELETE:pchisq(GLMGamma2JVDE$deviance - GLMGamma1FullJVDE$deviance, df = df.residual(GLMGamma2JVDE)-df.residual(GLMGamma1FullJVDE), lower = F) #
+      pchisq(GLMGamma2$deviance - GLMGamma1Full$deviance, df = df.residual(GLMGamma2)-df.residual(GLMGamma1Full), lower = F) #
       
 # 1.7. Technical premium for each risk profile based on GLMs ####
 
@@ -529,7 +539,7 @@ summary(GLMGamma2JVDE)
       
       #Variance
       
-      variance_covarianceGamma <- vcov(GLMGamma2JVDE)
+      variance_covarianceGamma <- vcov(GLMGamma2)
       # Low risk
       Low_risk_gamma <-c("(Intercept)", "AGEPH57-76", "agecar2-5", "splitOnce", "coverpMTPL+++","AGEPH57-76:splitOnce")
       variance_covariance_Gammalow <- variance_covarianceGamma[Low_risk_gamma, Low_risk_gamma]
@@ -547,7 +557,7 @@ summary(GLMGamma2JVDE)
 
       # mean 
       
-      mean_Gamma <- coef(summary(GLMGamma2JVDE))[, 1]
+      mean_Gamma <- coef(summary(GLMGamma2))[, 1]
       
       # Low risk
       Mean_Gammalow <- mean_Gamma[Low_risk_gamma]
@@ -635,6 +645,3 @@ summary(GLMGamma2JVDE)
       #high
       Mean_L_high+0.75*sqrt(Variance_L_high)+1.5*(Variance_L_high)
 
-# 2. Extra ####
-# Investigate what would be relevant and appropriate interaction terms of 2 or more covariates
-# Do this for the Poisson GLM as well as the Gamma GLM.
