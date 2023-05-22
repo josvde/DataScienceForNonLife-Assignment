@@ -348,6 +348,7 @@ summary(GLMGamma1Full)
 GLMGamma2JVDE <- glm(avgCA~AGEPH+agecar+split+coverp+AGEPH:split,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
 summary(GLMGamma2JVDE)
 
+
 #RD DELETE:GLMGamma3 <- glm(avgCA~AGEPH+agecar+fuelc+fleetc+coverp+powerc+INS,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
 #RD DELETE:summary(GLMGamma3)
 
@@ -356,7 +357,7 @@ summary(GLMGamma2JVDE)
 #RD DELETE: summary(GLMGamma2)
 
 #RD DELETE:GLMGamma4 <- glm(avgCA~AGEPH+coverp+INS,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
-summary(GLMGamma4)
+#RD DELETE:summary(GLMGamma4)
 
 #RD DELETE:GLMGamma5 <- glm(avgCA~AGEPH+coverp,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
 #RD DELETE:summary(GLMGamma5)
@@ -435,13 +436,12 @@ summary(GLMGamma4)
      # Calculate AIC
       AIC_GLMGAM1Full <- AIC(GLMGamma1Full)
       AIC_GLMGAM2 <- AIC(GLMGamma2JVDE)
-      #RD DELETE:AIC_GLMGAM2 <- AIC(GLMGamma2JVDE)
       #RD DELETE:AIC_GLMGAM3 <- AIC(GLMGamma3)
       
       # Calculate BIC
       BIC_GLMGAM1Full <- BIC(AIC_GLMGAM1Full)
-      BIC_GLMGAM2 <- BIC(GLMGamma2JVDE)
-      #RD DELETE:BIC_GLMGAM3 <- BIC(GLMGamma3)
+      BIC(GLMGamma2JVDE)
+      #RD DELETE:BIC_GLMGAM3 <- BIC(GLMGamma2JVDERD)
       
       
       # Print the AIC and BIC values
@@ -478,7 +478,6 @@ summary(GLMGamma4)
       GLMGamma2JVDE$deviance - GLMGamma1Full$deviance
       
       pchisq(GLMGamma2JVDE$deviance - GLMGamma1Full$deviance, df = df.residual(GLMGamma2JVDE)-df.residual(GLMGamma1Full), lower = F) #0.02186997 Not Significant on the 99% CI, but significant on the 95% CI
-      
       
       # Drop-in-deviance test between GLMGamma1Full and GLMGamma3 model.
       #RD DELETE:GLMGamma3$deviance - GLMGamma2$deviance
