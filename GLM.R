@@ -285,7 +285,9 @@ TARFR3 <- data.frame(Name=names(coefficients(GLMPois3)),E_Freq=exp(coefficients(
 
 # 1.3.2 Poisson GLMs with interaction terms ####
 
-# important!":" and "*" yield different results!
+# important!":" and "*" yield different results when coding interaction terms
+
+# quick way to get all possible interaction terms
 
 a<-names(Data)
 a<-a[!a %in% c("duree","nbrtotc","chargtot")]
@@ -464,7 +466,7 @@ summary(GLMGamma2)
       
       # Why almost accept model 3 when comparing to model 1, but reject model 3 when comparing to model 2? 
       # we can explain this because the drop in degrees of freedom is higher from model 1 to model 3, this results in a higher q-parameter for the chi-sq test statistic..
-      #this difference is smaller when comparing model 3 to 2. There the same increase in deviance holds, but difference in degrees of freedom is smaller...
+      # this difference is smaller when comparing model 3 to 2. There the same increase in deviance holds, but the difference in degrees of freedom is smaller...
  
       
 # 1.6.2 Gamma ####
@@ -507,6 +509,33 @@ summary(GLMGamma2)
       
 # 1.7. Technical premium for each risk profile based on GLMs ####
 
+      # Expected frequency per risk profile
+      # Profile A
+      EFa <- exp(sum(coef(GLMPois2)[c("(Intercept)","AGEPH57-76","agecar2-5","fuelcPetrol","splitOnce","fleetcYes","coverpMTPL+++","powerc<66","INSLuxembourg")]))
+      
+      #Profile B
+      EFb <- exp(sum(coef(GLMPois2)[c("(Intercept)","AGEPH37-56","agecar>10","fuelcPetrol","fleetcYes","powerc66-110","INSAntwerp")]))
+      
+      #Profile C
+      EFc <- exp(sum(coef(GLMPois2)[c("(Intercept)", "splitThrice", "INSBrabant & BXL")]))
+      
+      #Expected severity per risk profile
+      # Profile A
+      ESa <- exp(sum(coef(GLMGamma2)[c("(Intercept)","AGEPH57-76","agecar2-5","splitOnce","coverpMTPL+++","AGEPH57-76:splitOnce")]))
+      
+      #Profile B
+      ESb <- exp(sum(coef(GLMGamma2)[c("(Intercept)","AGEPH37-56","agecar>10")])) #interaction term AGEPH37-56:splitMonthly is ENCAPTURED in the intercept
+      
+      #Profile C
+      ESc<- exp(sum(coef(GLMGamma2)[c("(Intercept)","splitThrice")])) #interaction term AGEPH17-36:splitThrice is ENCAPTURED in the intercept
+      
+      RESULTS_TECHNICAL_PREMIUM <- data.frame(Expected_Frequency=c(EFa,EFb,EFc),Expected_Severity=c(ESa,ESb,ESc))
+      row.names(RESULTS_TECHNICAL_PREMIUM) <-c("Profile A","Profile B","Profile C")
+      RESULTS_TECHNICAL_PREMIUM$Premium <- RESULTS_TECHNICAL_PREMIUM$Expected_Frequency*RESULTS_TECHNICAL_PREMIUM$Expected_Severity
+      RESULTS_TECHNICAL_PREMIUM
+      
+#1.8. Risk loading calculations ####
+
 # We will use model 2, and thus frequency table TARFR2 and severity table TARSV2 to calculate the premium.
 
       # Lambda (Poisson)
@@ -515,20 +544,21 @@ summary(GLMGamma2)
       variance<- vcov(GLMPois2)
       
       
-      # Low risk
+      # Low risk (PROFILE A)
       Low_risk <-c("(Intercept)", "AGEPH57-76", "agecar2-5","sexpMale", "fuelcPetrol", "splitOnce", "fleetcYes", "coverpMTPL+++", "powerc<66", "INSLuxembourg")
       mean_Poislow <- mean[Low_risk]
       mean_Poislow <- sum(mean_Poislow)
       mean_Poislow
       Lambda_low <- exp(mean_Poislow)
-      # Medium risk
+      
+      # Medium risk (PROFILE B)
       Medium_risk <- c("(Intercept)", "AGEPH37-56", "agecar>10","sexpMale", "fuelcPetrol","fleetcYes","powerc66-110","INSAntwerp")
       mean_Poismedium <- mean[Medium_risk]
       mean_Poismedium <- sum(mean_Poismedium)
       mean_Poismedium
       Lambda_medium<- exp(mean_Poismedium)
       
-      # High risk
+      # High risk (PROFILE C)
       High_risk <- c("(Intercept)", "splitThrice", "INSBrabant & BXL")
       mean_Poishigh <- mean[High_risk]
       mean_Poishigh <- sum(mean_Poishigh)
@@ -540,17 +570,18 @@ summary(GLMGamma2)
       #Variance
       
       variance_covarianceGamma <- vcov(GLMGamma2)
-      # Low risk
+      
+      # Low risk (PROFILE A)
       Low_risk_gamma <-c("(Intercept)", "AGEPH57-76", "agecar2-5", "splitOnce", "coverpMTPL+++","AGEPH57-76:splitOnce")
       variance_covariance_Gammalow <- variance_covarianceGamma[Low_risk_gamma, Low_risk_gamma]
       Variance_gamma_low <- sum(variance_covariance_Gammalow)
 
-      # Medium risk
+      # Medium risk (PROFILE B)
       Medium_risk_gamma <- c("(Intercept)", "AGEPH37-56", "agecar>10","AGEPH37-56")
       variance_covariance_Gammamedium <- variance_covarianceGamma[Medium_risk_gamma, Medium_risk_gamma]
       Variance_gamma_medium <- sum(variance_covariance_Gammamedium)
       
-      # High risk
+      # High risk (PROFILE C)
       High_risk_gamma <- c("(Intercept)", "splitThrice")
       variance_covariance_Gammahigh <- variance_covarianceGamma[High_risk_gamma, High_risk_gamma]
       Variance_gamma_high <- sum(variance_covariance_Gammahigh)         
@@ -559,15 +590,15 @@ summary(GLMGamma2)
       
       mean_Gamma <- coef(summary(GLMGamma2))[, 1]
       
-      # Low risk
+      # Low risk (PROFILE A)
       Mean_Gammalow <- mean_Gamma[Low_risk_gamma]
       Mean_low <- sum(Mean_Gammalow)
       
-      # Medium risk
+      # Medium risk (PROFILE B)
       Mean_Gammamedium <- mean_Gamma[Medium_risk_gamma]
       Mean_medium <- sum(Mean_Gammamedium)
       
-      # High risk
+      # High risk (PROFILE C)
       Mean_Gammahigh <- mean_Gamma[High_risk_gamma]
       Mean_high <- sum(Mean_Gammahigh)   
       
