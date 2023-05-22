@@ -29,11 +29,6 @@ Data <- as.data.table(read.csv("DataCombined.csv", header=TRUE, sep=";", dec="."
 # make a quick selection for relevant covariates
 Data <- select(Data, AGEPH,duree,nbrtotc,chargtot,agecar,sexp,fuelc,split,usec,fleetc,sportc,coverp,powerc,INS)
 
-# load dataset with no outliers
-DataCleaned <- Data[which(Data$chargtot  > 0),]
-Tmax2=142112
-Data_no_out <- DataCleaned[which(DataCleaned$chargtot < Tmax2),]
-
 # make AGEPH variable into groups
 a<-Data$AGEPH
 a[a>=17&a<37]="17-36"
@@ -365,22 +360,21 @@ GLMPoisIT1_3 <- glm(nbrtotc~AGEPH+INS+fuelc+split+coverp+powerc+AGEPH:INS+AGEPH:
 anova(GLMPois1Full,GLMPoisIT1_3,test="LRT")
 
 
-# 1.4. Draft section: one dummy gamma uploading for testing model selection and risk loading####
+# 1.4. Data cleaning and formatting for Gamma GLM
 
-GLMGamma1Full <- glm(chargtot ~ AGEPH + agecar + sexp + fuelc + split + usec + fleetc + sportc + coverp + powerc + INS, offset = log(duree), data = Data_no_out, family = Gamma(link = "log"))
-summary(GLMPois1Full)
-
+# load dataset with no outliers
+DataCleaned <- Data[which(Data$chargtot  > 0),]
+Tmax2=142112
+Data_no_out <- DataCleaned[which(DataCleaned$chargtot < Tmax2),]
+Data_no_out$avgCA <- Data_no_out$chargtot/Data_no_out$nbrtotc
 
 # 1.5. Gamma GLMs & expected severity tables ####
 # Gamma regression for severity
 
-GLMGamma1Full <- glm(chargtot ~ AGEPH + agecar + sexp + fuelc + split + usec + fleetc + sportc + coverp + powerc + INS, offset = log(duree), data = Data_no_out, family = Gamma(link = "log"))
+GLMGamma1Full <- glm(avgCA ~ AGEPH + agecar + sexp + fuelc + split + usec + fleetc + sportc + coverp + powerc + INS, offset = log(duree), data = Data_no_out, family = Gamma(link = "log"))
 summary(GLMGamma1Full)
 
-GLMGamma3Dscrtv <- glm(chargtot~AGEPH+agecar+fuelc+fleetc+coverp+powerc+INS,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
-summary(GLMGamma3Dscrtv)
-
-GLMGamma2 <- glm(chargtot~AGEPH+agecar+sexp+fuelc+split+fleetc+coverp+powerc+INS,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
+GLMGamma2 <- glm(avgCA~AGEPH+agecar+split+coverp+AGEPH:split,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
 summary(GLMGamma2)
 
 # 1.6. Model selection ####
@@ -446,7 +440,7 @@ summary(GLMGamma2)
       pchisq(GLMPois3$deviance - GLMPois1Full$deviance, df = df.residual(GLMPois3)-df.residual(GLMPois1Full), lower = F) #0.02186997 Not Significant on the 99% CI, but significant on the 95% CI
 
      
-      # Drop-in-deviance test between GLMPois1Full and GLMPois3 model.
+      # Drop-in-deviance test between GLMPois2 and GLMPois3 model.
       GLMPois3$deviance - GLMPois2$deviance
       
       pchisq(GLMPois3$deviance - GLMPois2$deviance, df = df.residual(GLMPois3)-df.residual(GLMPois2), lower = F) #0.006875533 Significan
@@ -459,6 +453,12 @@ summary(GLMGamma2)
       # we can explain this because the drop in degrees of freedom is higher from model 1 to model 3, this results in a higher q-parameter for the chi-sq test statistic..
       #this difference is smaller when comparing model 3 to 2. There the same increase in deviance holds, but difference in degrees of freedom is smaller...
       
+# 1.6.2. Gamma Regression selection ####
+      # Drop-in-deviance test between GLMGamma1Full and GLMGamma2 model.
+      GLMGamma2$deviance - GLMGamma1Full$deviance
+      pchisq(GLMGamma2$deviance - GLMGamma1Full$deviance, df = df.residual(GLMGamma2)-df.residual(GLMGamma1Full), lower = F) #0.006875533 Significan
+      
+      #We note that the 
       
 # 1.7. Technical premium for each risk profile based on GLMs ####
 
