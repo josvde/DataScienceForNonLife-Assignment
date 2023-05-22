@@ -467,7 +467,7 @@ summary(GLMGamma2JVDE)
       
       # A first general look at the drop in deviance by starting from the model with only an intercept and than adding the covariates one by one. 
       # gives us a first indication of if the factor variable matter or not     
-      anova(GLMGamma1Full,test="Chisq")
+      # anova(GLMGamma1Full,test="Chisq")
       
       # Drop-in-deviance test between GLMGamma1Full and GLMGamma2 model.
       #RD DELETE: GLMGamma2$deviance - GLMGamma1Full$deviance
@@ -475,9 +475,9 @@ summary(GLMGamma2JVDE)
       #RD DELETE: pchisq(GLMGamma2$deviance - GLMGamma1Full$deviance, df = df.residual(GLMGamma2)-df.residual(GLMGamma1Full) , lower = F) #0.310899 Not significant 
       
       # Drop-in-deviance test between GLMGamma1Full and GLMGamma3 model.
-      GLMGamma2JVDE$deviance - GLMGamma1Full$deviance
+      # GLMGamma2JVDE$deviance - GLMGamma1Full$deviance
       
-      pchisq(GLMGamma2JVDE$deviance - GLMGamma1Full$deviance, df = df.residual(GLMGamma2JVDE)-df.residual(GLMGamma1Full), lower = F) #0.02186997 Not Significant on the 99% CI, but significant on the 95% CI
+      # pchisq(GLMGamma2JVDE$deviance - GLMGamma1Full$deviance, df = df.residual(GLMGamma2JVDE)-df.residual(GLMGamma1Full), lower = F) #0.02186997 Not Significant on the 99% CI, but significant on the 95% CI
       
       # Drop-in-deviance test between GLMGamma1Full and GLMGamma3 model.
       #RD DELETE:GLMGamma3$deviance - GLMGamma2$deviance
