@@ -568,14 +568,14 @@ summary(GLMGamma2)
       
       
       # Low risk (PROFILE A)
-      Low_risk <-c("(Intercept)", "AGEPH57-76", "agecar2-5","sexpMale", "fuelcPetrol", "splitOnce", "fleetcYes", "coverpMTPL+++", "powerc<66", "INSLuxembourg")
+      Low_risk <-c("(Intercept)", "AGEPH57-76", "agecar2-5", "fuelcPetrol", "splitOnce", "fleetcYes", "coverpMTPL+++", "powerc<66", "INSLuxembourg")
       mean_Poislow <- mean[Low_risk]
       mean_Poislow <- sum(mean_Poislow)
       mean_Poislow
       Lambda_low <- exp(mean_Poislow)
       
       # Medium risk (PROFILE B)
-      Medium_risk <- c("(Intercept)", "AGEPH37-56", "agecar>10","sexpMale", "fuelcPetrol","fleetcYes","powerc66-110","INSAntwerp")
+      Medium_risk <- c("(Intercept)", "AGEPH37-56", "agecar>10", "fuelcPetrol","fleetcYes","powerc66-110","INSAntwerp")
       mean_Poismedium <- mean[Medium_risk]
       mean_Poismedium <- sum(mean_Poismedium)
       mean_Poismedium
