@@ -341,19 +341,19 @@ Data_no_out$avgCA <- Data_no_out$chargtot/Data_no_out$nbrtotc
 # 1.5. Gamma GLMs & expected severity tables ####
 # Gamma regression for severity
 
-GLMGamma1FullJVDE <- glm(avgCA ~ AGEPH + agecar + sexp + fuelc + split + usec + fleetc + sportc + coverp + powerc + INS, offset = log(duree), data = Data_no_out, family = Gamma(link = "log"))
+GLMGamma1Full <- glm(avgCA ~ AGEPH + agecar + sexp + fuelc + split + usec + fleetc + sportc + coverp + powerc + INS, offset = log(duree), data = Data_no_out, family = Gamma(link = "log"))
 summary(GLMGamma1Full)
 
 
-#RD DELETE:GLMGamma2JVDE <- glm(avgCA~AGEPH+agecar+split+coverp+AGEPH:split,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
+GLMGamma2JVDE <- glm(avgCA~AGEPH+agecar+split+coverp+AGEPH:split,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
 summary(GLMGamma2JVDE)
 
 #RD DELETE:GLMGamma3 <- glm(avgCA~AGEPH+agecar+fuelc+fleetc+coverp+powerc+INS,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
-summary(GLMGamma3)
+#RD DELETE:summary(GLMGamma3)
 
-GLMGamma2RD <- glm(avgCA~AGEPH+agecar+split+coverp,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
+#RD DELETE: GLMGamma2 <- glm(avgCA~AGEPH+agecar+split+coverp,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
 
-summary(GLMGamma2RD)
+#RD DELETE: summary(GLMGamma2)
 
 #RD DELETE:GLMGamma4 <- glm(avgCA~AGEPH+coverp+INS,offset=log(duree),data= Data_no_out, family=Gamma(link="log"))
 summary(GLMGamma4)
@@ -409,15 +409,15 @@ summary(GLMGamma4)
       pchisq(GLMPois2$deviance - GLMPois1Full$deviance, df = df.residual(GLMPois2)-df.residual(GLMPois1Full) , lower = F) #0.310899 Not significant 
       
       # Drop-in-deviance test between GLMPois1Full and GLMPois3 model.
-      #RD DELETE:GLMPois3$deviance - GLMPois1Full$deviance
+      GLMPois3$deviance - GLMPois1Full$deviance
       
-      #RD DELETE:pchisq(GLMPois3$deviance - GLMPois1Full$deviance, df = df.residual(GLMPois3)-df.residual(GLMPois1Full), lower = F) #0.02186997 Not Significant on the 99% CI, but significant on the 95% CI
+      pchisq(GLMPois3$deviance - GLMPois1Full$deviance, df = df.residual(GLMPois3)-df.residual(GLMPois1Full), lower = F) #0.02186997 Not Significant on the 99% CI, but significant on the 95% CI
 
      
       # Drop-in-deviance test between GLMPois2 and GLMPois3 model.
-      #RD DELETE:GLMPois3$deviance - GLMPois2$deviance
+      GLMPois3$deviance - GLMPois2$deviance
       
-      #RD DELETE:pchisq(GLMPois3$deviance - GLMPois2$deviance, df = df.residual(GLMPois3)-df.residual(GLMPois2), lower = F) #0.006875533 Significant
+      pchisq(GLMPois3$deviance - GLMPois2$deviance, df = df.residual(GLMPois3)-df.residual(GLMPois2), lower = F) #0.006875533 Significant
       
       
       # we accepted GLMPois2 and rejected GLMPois1 (by the first chi-sq test)
@@ -434,13 +434,13 @@ summary(GLMGamma4)
       
      # Calculate AIC
       AIC_GLMGAM1Full <- AIC(GLMGamma1Full)
-      AIC_GLMGAM2 <- AIC(GLMGamma2RD)
+      AIC_GLMGAM2 <- AIC(GLMGamma2JVDE)
       #RD DELETE:AIC_GLMGAM2 <- AIC(GLMGamma2JVDE)
       #RD DELETE:AIC_GLMGAM3 <- AIC(GLMGamma3)
       
       # Calculate BIC
-      BIC_GLMGAM1Full <- BIC(GLMPois1Full)
-      BIC_GLMGAM2 <- BIC(GLMGamma2RD)
+      BIC_GLMGAM1Full <- BIC(AIC_GLMGAM1Full)
+      BIC_GLMGAM2 <- BIC(GLMGamma2JVDE)
       #RD DELETE:BIC_GLMGAM3 <- BIC(GLMGamma3)
       
       
@@ -458,7 +458,7 @@ summary(GLMGamma4)
       # GLMPois1Full
       deviance(GLMGamma1Full)
       # GLMPois2
-      deviance(GLMGamma2RD)
+      deviance(GLMGamma2)
       
       # GLMPois3Dscrtv2
       #RD DELETE:deviance(GLMGamma3)
@@ -470,14 +470,14 @@ summary(GLMGamma4)
       anova(GLMGamma1Full,test="Chisq")
       
       # Drop-in-deviance test between GLMGamma1Full and GLMGamma2 model.
-      GLMGamma2RD$deviance - GLMGamma1Full$deviance
+      #RD DELETE: GLMGamma2$deviance - GLMGamma1Full$deviance
       
-      pchisq(GLMGamma2RD$deviance - GLMGamma1Full$deviance, df = df.residual(GLMGamma2RD)-df.residual(GLMGamma1Full) , lower = F) #0.310899 Not significant 
+      #RD DELETE: pchisq(GLMGamma2$deviance - GLMGamma1Full$deviance, df = df.residual(GLMGamma2)-df.residual(GLMGamma1Full) , lower = F) #0.310899 Not significant 
       
       # Drop-in-deviance test between GLMGamma1Full and GLMGamma3 model.
-      #RD DELETE:GLMGamma3$deviance - GLMGamma1Full$deviance
+      GLMGamma2JVDE$deviance - GLMGamma1Full$deviance
       
-      #RD DELETE:pchisq(GLMGamma3$deviance - GLMGamma1Full$deviance, df = df.residual(GLMGamma3)-df.residual(GLMGamma1Full), lower = F) #0.02186997 Not Significant on the 99% CI, but significant on the 95% CI
+      pchisq(GLMGamma2JVDE$deviance - GLMGamma1Full$deviance, df = df.residual(GLMGamma2JVDE)-df.residual(GLMGamma1Full), lower = F) #0.02186997 Not Significant on the 99% CI, but significant on the 95% CI
       
       
       # Drop-in-deviance test between GLMGamma1Full and GLMGamma3 model.
@@ -530,9 +530,9 @@ summary(GLMGamma4)
       
       #Variance
       
-      variance_covarianceGamma <- vcov(GLMGamma2RD)
+      variance_covarianceGamma <- vcov(GLMGamma2JVDE)
       # Low risk
-      Low_risk_gamma <-c("(Intercept)", "AGEPH57-76", "agecar2-5", "splitOnce", "coverpMTPL+++")
+      Low_risk_gamma <-c("(Intercept)", "AGEPH57-76", "agecar2-5", "splitOnce", "coverpMTPL+++","AGEPH57-76:splitOnce")
       variance_covariance_Gammalow <- variance_covarianceGamma[Low_risk_gamma, Low_risk_gamma]
       Variance_gamma_low <- sum(variance_covariance_Gammalow)
 
@@ -548,7 +548,7 @@ summary(GLMGamma4)
 
       # mean 
       
-      mean_Gamma <- coef(summary(GLMGamma2RD))[, 1]
+      mean_Gamma <- coef(summary(GLMGamma2JVDE))[, 1]
       
       # Low risk
       Mean_Gammalow <- mean_Gamma[Low_risk_gamma]
