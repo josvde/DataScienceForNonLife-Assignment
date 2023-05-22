@@ -1,3 +1,11 @@
+##########################################
+## Assignment Data science for None-Life##
+## Jean-Ferdinand van Cauwenbergh       ##
+## Jos Van den Eynde                    ## 
+## Robin Dessein                        ##
+##########################################
+
+
 library(mgcv)
 library(ggplot2)
 library(data.table)

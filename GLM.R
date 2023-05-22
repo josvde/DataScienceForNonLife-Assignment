@@ -1,4 +1,9 @@
-## Intro  ####
+##########################################
+## Assignment Data science for None-Life##
+## Jean-Ferdinand van Cauwenbergh       ##
+## Jos Van den Eynde                    ## 
+## Robin Dessein                        ##
+##########################################
 
 # we will first investigate for each covariate what levels yield the highest exposure to risk...
 # exposure to risk =total number of claims*average claim amount/total number of years
@@ -449,25 +454,21 @@ summary(GLMGamma2)
   
       pchisq(GLMPois2$deviance - GLMPois1Full$deviance, df = df.residual(GLMPois2)-df.residual(GLMPois1Full) , lower = F) #0.310899 Not significant 
       
-      # Drop-in-deviance test between GLMPois1Full and GLMPois3 model.
-      GLMPois3$deviance - GLMPois1Full$deviance
-      
-      pchisq(GLMPois3$deviance - GLMPois1Full$deviance, df = df.residual(GLMPois3)-df.residual(GLMPois1Full), lower = F) #0.02186997 Not Significant on the 99% CI, but significant on the 95% CI
-
-     
       # Drop-in-deviance test between GLMPois2 and GLMPois3 model.
       GLMPois3$deviance - GLMPois2$deviance
       
       pchisq(GLMPois3$deviance - GLMPois2$deviance, df = df.residual(GLMPois3)-df.residual(GLMPois2), lower = F) #0.006875533 Significant
       
       
+      # Drop-in-deviance test between GLMPois1Full and GLMPois3 model.
+      GLMPois3$deviance - GLMPois1Full$deviance
+      
+      pchisq(GLMPois3$deviance - GLMPois1Full$deviance, df = df.residual(GLMPois3)-df.residual(GLMPois1Full), lower = F) #0.02186997 Not Significant on the 99% CI, but significant on the 95% CI
+
+      
       # we accepted GLMPois2 and rejected GLMPois1 (by the first chi-sq test)
       # The residual deviance between GLMPois1 and GLMPois2 are negligible 
       
-      # Why almost accept model 3 when comparing to model 1, but reject model 3 when comparing to model 2? 
-      # we can explain this because the drop in degrees of freedom is higher from model 1 to model 3, this results in a higher q-parameter for the chi-sq test statistic..
-      # this difference is smaller when comparing model 3 to 2. There the same increase in deviance holds, but the difference in degrees of freedom is smaller...
- 
       
 # 1.6.2 Gamma ####
       
@@ -500,7 +501,7 @@ summary(GLMGamma2)
   # Gamma Regression selection
       
       # Drop-in-deviance test between GLMGamma1Full and GLMGamma2 model.
-      GLMGamma2JVDE$deviance - GLMGamma1Full$deviance
+      GLMGamma2$deviance - GLMGamma1Full$deviance
       
       #we don't need the chi-squared test, as we can see that the deviance of model 2 is smaller, with a smaller number of parameters.
       #so our preference will always go to model 2 (as the p-value of 100% below can confirm)
@@ -570,44 +571,42 @@ summary(GLMGamma2)
       # Low risk (PROFILE A)
       Low_risk <-c("(Intercept)", "AGEPH57-76", "agecar2-5", "fuelcPetrol", "splitOnce", "fleetcYes", "coverpMTPL+++", "powerc<66", "INSLuxembourg")
       mean_Poislow <- mean[Low_risk]
-      mean_Poislow <- sum(mean_Poislow)
-      mean_Poislow
-      Lambda_low <- exp(mean_Poislow)
+      Lambda_low <- sum(mean_Poislow)
+      exp_Lambda_low <- exp(Lambda_low)
+      exp_Lambda_low #E(F)
       
       # Medium risk (PROFILE B)
       Medium_risk <- c("(Intercept)", "AGEPH37-56", "agecar>10", "fuelcPetrol","fleetcYes","powerc66-110","INSAntwerp")
       mean_Poismedium <- mean[Medium_risk]
-      mean_Poismedium <- sum(mean_Poismedium)
-      mean_Poismedium
-      Lambda_medium<- exp(mean_Poismedium)
+      Lambda_medium <- sum(mean_Poismedium)
+      exp_Lambda_medium <- exp(Lambda_medium)
+      exp_Lambda_medium #E(F)
       
       # High risk (PROFILE C)
       High_risk <- c("(Intercept)", "splitThrice", "INSBrabant & BXL")
       mean_Poishigh <- mean[High_risk]
-      mean_Poishigh <- sum(mean_Poishigh)
-      mean_Poishigh
-      Lambda_high<- exp(mean_Poishigh)
+      Lambda_high <- sum(mean_Poishigh)
+      exp_Lambda_high <- exp(Lambda_high)
+      exp_Lambda_high #E(F)
       
-    # Alpha and Beta (Gamma) (To be updated once we have our GammaGLM) TBC
       
-      #Variance
+    # Alpha and Theta (Gamma) (To be updated once we have our GammaGLM) TBC
+ 
+      #Alpha
       
-      variance_covarianceGamma <- vcov(GLMGamma2)
+      dispersion <- summary(GLMGamma2)$dispersion      
+      Alpha <- 1/dispersion    
       
       # Low risk (PROFILE A)
       Low_risk_gamma <-c("(Intercept)", "AGEPH57-76", "agecar2-5", "splitOnce", "coverpMTPL+++","AGEPH57-76:splitOnce")
-      variance_covariance_Gammalow <- variance_covarianceGamma[Low_risk_gamma, Low_risk_gamma]
-      Variance_gamma_low <- sum(variance_covariance_Gammalow)
+
 
       # Medium risk (PROFILE B)
-      Medium_risk_gamma <- c("(Intercept)", "AGEPH37-56", "agecar>10","AGEPH37-56")
-      variance_covariance_Gammamedium <- variance_covarianceGamma[Medium_risk_gamma, Medium_risk_gamma]
-      Variance_gamma_medium <- sum(variance_covariance_Gammamedium)
-      
+      Medium_risk_gamma <- c("(Intercept)", "AGEPH37-56", "agecar>10")
+
       # High risk (PROFILE C)
       High_risk_gamma <- c("(Intercept)", "splitThrice")
-      variance_covariance_Gammahigh <- variance_covarianceGamma[High_risk_gamma, High_risk_gamma]
-      Variance_gamma_high <- sum(variance_covariance_Gammahigh)         
+       
 
       # mean 
       
@@ -616,14 +615,20 @@ summary(GLMGamma2)
       # Low risk (PROFILE A)
       Mean_Gammalow <- mean_Gamma[Low_risk_gamma]
       Mean_low <- sum(Mean_Gammalow)
+      Exp_Mean_low <- exp(Mean_low)
+      Exp_Mean_low #E(S)
       
       # Medium risk (PROFILE B)
       Mean_Gammamedium <- mean_Gamma[Medium_risk_gamma]
       Mean_medium <- sum(Mean_Gammamedium)
+      Exp_Mean_medium <- exp(Mean_medium)
+      Exp_Mean_medium #E(S)
       
       # High risk (PROFILE C)
       Mean_Gammahigh <- mean_Gamma[High_risk_gamma]
       Mean_high <- sum(Mean_Gammahigh)   
+      Exp_Mean_high <- exp(Mean_high)
+      Exp_Mean_high #E(S)
       
       #alpha <- (Mean_gamma / Variance_gamma)^2
       # beta <- Mean_gamma / Variance_gamma
@@ -649,34 +654,54 @@ summary(GLMGamma2)
       beta_high <- (Mean_high/Variance_gamma_high)
       beta_high
       
+    #Theta
+    
+      # Low risk (PROFILE A)
+      Theta_low <- Alpha/(1/Mean_low)
+      Theta_low
+      # Medium risk (PROFILE B)
+      Theta_medium <- Alpha/(1/Mean_medium)
+      Theta_medium      
+      # High risk (PROFILE C)
+      Theta_high <- Alpha/(1/Mean_high)
+      Theta_high       
         
 # Mean and variance loss function
         
   # Low risk
-    Mean_L_low <- Lambda_low*(alpha_low/beta_low)
+    Mean_L_low <- exp_Lambda_low*Exp_Mean_low
     Mean_L_low
-    Variance_L_low <- Lambda_low*(alpha_low/(beta_low^2))+Lambda_low*(alpha_low/beta_low)^2+(alpha_low/(beta_low^2))*Lambda_low^2
-    Variance_L_low
+    Variance_L_low <- (Lambda_low*Alpha)/(Theta_low^2)*(1+Lambda_low+Alpha)
+    Variance_L_low #VAR(L)
+    SD_L_low<-(Variance_L_low)*(0.5)
+    SD_L_low #S.d. (L)
+    
     # Medium risk
-    Mean_L_medium <- Lambda_medium*(alpha_medium/beta_medium)
+    Mean_L_medium <- exp_Lambda_medium*Exp_Mean_medium
     Mean_L_medium
-    Variance_L_medium <- Lambda_medium*(alpha_medium/(beta_medium^2))+Lambda_medium*(alpha_medium/beta_medium)^2+(alpha_medium/(beta_medium^2))*Lambda_medium^2
-    Variance_L_medium
+    Variance_L_medium <- (Lambda_medium*Alpha)/(Theta_medium^2)*(1+Lambda_medium+Alpha)
+    Variance_L_medium #VAR(L)
+    SD_L_medium<-(Variance_L_medium)*(0.5)
+    SD_L_medium #S.d. (L)
+    
     # high risk
-    Mean_L_high <- Lambda_high*(alpha_high/beta_high)
+    Mean_L_high <- exp_Lambda_high*Exp_Mean_high
     Mean_L_high
-    Variance_L_high <- Lambda_high*(alpha_high/(beta_high^2))+Lambda_high*(alpha_high/beta_high)^2+(alpha_high/(beta_high^2))*Lambda_high^2
-    Variance_L_high
-
+    Variance_L_high <- (Lambda_high*Alpha)/(Theta_high^2)*(1+Lambda_high+Alpha)
+    Variance_L_high #VAR(L)
+    SD_L_high<-(Variance_L_high)*(0.5)
+    SD_L_high #S.d. (L)
+    
 # Risk loaded premium
     
     # Expected Value Principle
       #low
-      (1+0.01)*Mean_L_low
+      (1+0.0075)*round(Mean_L_low, digits = 0)
       #medium
-      (1+0.01)*Mean_L_medium
+      (1+0.0075)*round(Mean_L_medium, digits = 0)
       #high
-      (1+0.01)*Mean_L_high
+      (1+0.0075)*round(Mean_L_high, digits = 0)
+    
     # Variance Principle
       #low
       Mean_L_low+1.5*(Variance_L_low)
@@ -686,16 +711,16 @@ summary(GLMGamma2)
       Mean_L_high+1.5*(Variance_L_high)
     # Standard Deviation Principle
       #low
-      Mean_L_low+3*sqrt(Variance_L_low)
+      Mean_L_low+3*(SD_L_low)
       #medium
-      Mean_L_medium+3*sqrt(Variance_L_medium)
+      Mean_L_medium+3*(SD_L_medium)
       #high
-      Mean_L_high+3*sqrt(Variance_L_high)
+      Mean_L_high+3*(SD_L_high)
     # Compromise principle
       #low
-      Mean_L_low+0.75*sqrt(Variance_L_low)+1.5*(Variance_L_low)
+      Mean_L_low+0.75*(SD_L_low)+1.5*(Variance_L_low)
       #medium
-      Mean_L_medium+0.75*sqrt(Variance_L_medium)+1.5*(Variance_L_medium)
+      Mean_L_medium+0.75*(SD_L_medium)+1.5*(Variance_L_medium)
       #high
-      Mean_L_high+0.75*sqrt(Variance_L_high)+1.5*(Variance_L_high)
+      Mean_L_high+0.75*(SD_L_high)+1.5*(Variance_L_high)
 
