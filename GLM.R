@@ -508,28 +508,51 @@ summary(GLMGamma2)
       pchisq(GLMGamma2$deviance - GLMGamma1Full$deviance, df = df.residual(GLMGamma2)-df.residual(GLMGamma1Full), lower = F) #
       
 # 1.7. Technical premium for each risk profile based on GLMs ####
-
-      # Expected frequency per risk profile
+      
+      # Values linear predictor poisson regression per risk profile
+      
       # Profile A
-      EFa <- exp(sum(coef(GLMPois2)[c("(Intercept)","AGEPH57-76","agecar2-5","fuelcPetrol","splitOnce","fleetcYes","coverpMTPL+++","powerc<66","INSLuxembourg")]))
+      PRLa <- sum(coef(GLMPois2)[c("(Intercept)","AGEPH57-76","agecar2-5","fuelcPetrol","splitOnce","fleetcYes","coverpMTPL+++","powerc<66","INSLuxembourg")])
       
       #Profile B
-      EFb <- exp(sum(coef(GLMPois2)[c("(Intercept)","AGEPH37-56","agecar>10","fuelcPetrol","fleetcYes","powerc66-110","INSAntwerp")]))
+      PRLb <- sum(coef(GLMPois2)[c("(Intercept)","AGEPH37-56","agecar>10","fuelcPetrol","fleetcYes","powerc66-110","INSAntwerp")])
       
       #Profile C
-      EFc <- exp(sum(coef(GLMPois2)[c("(Intercept)", "splitThrice", "INSBrabant & BXL")]))
+      PRLc <- sum(coef(GLMPois2)[c("(Intercept)", "splitThrice", "INSBrabant & BXL")])
+        
+      # Expected frequency per risk profile
+      
+      # Profile A
+      EFa <- exp(PRLa)
+      
+      #Profile B
+      EFb <- exp(PRLb)
+      
+      #Profile C
+      EFc <- exp(PRLc)
+      
+      # Values linear predictor poisson regression per risk profile
+      # Profile A
+      GRLa <- sum(coef(GLMGamma2)[c("(Intercept)","AGEPH57-76","agecar2-5","splitOnce","coverpMTPL+++","AGEPH57-76:splitOnce")])
+      
+      #Profile B
+      GRLb <- sum(coef(GLMGamma2)[c("(Intercept)","AGEPH37-56","agecar>10")]) #interaction term AGEPH37-56:splitMonthly is ENCAPTURED in the intercept
+      
+      #Profile C
+      GRLc<- sum(coef(GLMGamma2)[c("(Intercept)","splitThrice")]) #interaction term AGEPH17-36:splitThrice is ENCAPTURED in the intercept
       
       #Expected severity per risk profile
+      
       # Profile A
-      ESa <- exp(sum(coef(GLMGamma2)[c("(Intercept)","AGEPH57-76","agecar2-5","splitOnce","coverpMTPL+++","AGEPH57-76:splitOnce")]))
+      ESa <- exp(GRLa)
       
       #Profile B
-      ESb <- exp(sum(coef(GLMGamma2)[c("(Intercept)","AGEPH37-56","agecar>10")])) #interaction term AGEPH37-56:splitMonthly is ENCAPTURED in the intercept
+      ESb <- exp(GRLb)
       
       #Profile C
-      ESc<- exp(sum(coef(GLMGamma2)[c("(Intercept)","splitThrice")])) #interaction term AGEPH17-36:splitThrice is ENCAPTURED in the intercept
+      ESc<- exp(GRLc)
       
-      RESULTS_TECHNICAL_PREMIUM <- data.frame(Expected_Frequency=c(EFa,EFb,EFc),Expected_Severity=c(ESa,ESb,ESc))
+      RESULTS_TECHNICAL_PREMIUM <- data.frame(Linear_Predictor_PoissonR=c(PRLa,PRLb,PRLc),Linear_Predictor_GammaR=c(GRLa,GRLb,GRLc),Expected_Frequency=c(EFa,EFb,EFc),Expected_Severity=c(ESa,ESb,ESc))
       row.names(RESULTS_TECHNICAL_PREMIUM) <-c("Profile A","Profile B","Profile C")
       RESULTS_TECHNICAL_PREMIUM$Premium <- RESULTS_TECHNICAL_PREMIUM$Expected_Frequency*RESULTS_TECHNICAL_PREMIUM$Expected_Severity
       RESULTS_TECHNICAL_PREMIUM
